@@ -3,9 +3,9 @@ package css_phy_pkg;
   localparam int RATE_250K = 1;
   localparam int PHR_BITS  = 12;
   localparam int SFD_BITS  = 16;
-  localparam int TSUB_SAMPLES = 38;
-  localparam int ACTIVE_CHIRP_SAMPLES = 152;
-  localparam int MAX_PAYLOAD_BYTES = 127;
+  localparam logic [8:0] TSUB_SAMPLES = 9'd38;
+  localparam logic [8:0] ACTIVE_CHIRP_SAMPLES = 9'd152;
+  localparam logic [7:0] MAX_PAYLOAD_BYTES = 8'd127;
 
   function automatic int pad_modulus(input logic rate);
     pad_modulus = rate ? 24 : 6;

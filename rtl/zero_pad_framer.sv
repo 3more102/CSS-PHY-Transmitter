@@ -4,18 +4,19 @@ module zero_pad_framer (
   output logic [5:0] pad_bits,
   output logic [10:0] total_bits
 );
-  integer n;
-  integer base_bits;
-  integer rem_bits;
-  integer pad_i;
+  logic [5:0] n;
+  logic [10:0] base_bits;
+  logic [5:0] rem_bits;
+
   always_comb begin
-    n = rate ? 24 : 6;
-    base_bits = 12 + (payload_length * 8);
-    rem_bits = base_bits % n;
+    n = rate ? 6'd24 : 6'd6;
+    base_bits = 11'd12 + ({3'd0, payload_length} << 3);
+    // The remainder is mathematically < 24, so the explicit six-bit cast is
+    // lossless and documents the intended fixed-width hardware representation.
+    rem_bits = 6'(base_bits % {5'd0, n});
     // Exact supplied MATLAB behavior: N - mod(...,N). Therefore a complete
-    // N-bit zero block is appended when rem_bits==0.
-    pad_i = n - rem_bits;
-    pad_bits = pad_i[5:0];
-    total_bits = base_bits + pad_i;
+    // N-bit zero block is appended when the remainder is zero.
+    pad_bits = n - rem_bits;
+    total_bits = base_bits + {5'd0, pad_bits};
   end
 endmodule

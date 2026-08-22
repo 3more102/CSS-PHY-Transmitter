@@ -32,7 +32,10 @@ module tb_css_tx_controller;
     payload_length=plen[7:0]; reset=1; repeat(2)@(posedge clk); reset=0;
     @(negedge clk); start=1; @(negedge clk); start=0; count=0;
     forever begin
-      @(posedge clk); #1;
+      @(posedge clk);
+      // Sample the chip in the handshake cycle before DUT nonblocking state/index
+      // updates take effect. A #1 delay here would observe the next chip and
+      // create a one-chip scoreboard skew at preamble/SFD boundaries.
       if(chip_valid && chip_ready) begin
         rc=$fscanf(cfd,"%d %d\n",exp_i,exp_q); if(rc!=2)$fatal(1,"unexpected extra chip %0d",count);
         if(chip_i!==(exp_i!=0) || chip_q!==(exp_q!=0))
@@ -40,6 +43,7 @@ module tb_css_tx_controller;
                  RATE,plen,count,exp_i,exp_q,chip_i,chip_q);
         count=count+1;
       end
+      #1;
       if(source_done) begin
         rc=$fscanf(cfd,"%d %d\n",exp_i,exp_q); if(rc==2)$fatal(1,"controller ended early");
         $fclose(cfd); $display("PASS tb_css_tx_controller rate=%0d plen=%0d chips=%0d",RATE,plen,count); $finish;

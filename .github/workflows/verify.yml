@@ -32,7 +32,9 @@ jobs:
           sudo apt-get install -y iverilog verilator
 
       - name: Run evidence-driven verification
-        run: make verify
+        run: |
+          make verify
+          python3 scripts/require_ci_evidence.py
 
       - name: Preserve verification evidence
         if: always()

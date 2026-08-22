@@ -28,6 +28,8 @@ class ArtifactTests(unittest.TestCase):
     def test_no_floating_point_or_runtime_trig_in_synth_rtl(self):
         text="\n".join(p.read_text() for p in (ROOT/"rtl").glob("*.sv"))
         self.assertNotRegex(text, r"\$sin\b|\$cos\b")
+        # Reject the synthesizable Verilog real data type, but not identifiers
+        # such as Tx_real/qpsk_real/chirp_real.
         self.assertNotRegex(text, r"(?m)^\s*real\s+")
         self.assertNotRegex(text, r"#\s*\d+\s*;")
 
@@ -37,6 +39,8 @@ class ArtifactTests(unittest.TestCase):
             self.assertRegex(text, rf"\b{re.escape(name)}\b")
         self.assertRegex(text, r"Tx_real\s*,")
         self.assertRegex(text, r"Tx_imag")
+
+
 
     def test_mandatory_demux_is_integrated_not_dead_code(self):
         controller=(ROOT/"rtl"/"css_tx_controller.sv").read_text()
@@ -64,13 +68,20 @@ class ArtifactTests(unittest.TestCase):
         text=(ROOT/"rtl"/"css_phy_tx_top.sv").read_text()
         self.assertRegex(text, r"`ifndef\s+SYNTHESIS[\s\S]*?\$error[\s\S]*?`endif")
 
+
     def test_ci_runs_open_source_hdl_verification_and_preserves_evidence(self):
         workflow = (ROOT / ".github" / "workflows" / "verify.yml").read_text()
         self.assertIn("iverilog", workflow)
         self.assertIn("verilator", workflow)
         self.assertIn("make verify", workflow)
+        self.assertIn("python3 scripts/require_ci_evidence.py", workflow)
         self.assertIn("actions/upload-artifact@v4", workflow)
         self.assertNotIn("vivado", workflow.lower())
+        gate = ROOT / "scripts" / "require_ci_evidence.py"
+        self.assertTrue(gate.is_file())
+        gate_text = gate.read_text()
+        self.assertIn('"RTL simulation regression"', gate_text)
+        self.assertIn('"Verilator lint"', gate_text)
         self.assertTrue((ROOT / "requirements.txt").is_file())
 
     def test_protocol_testbench_covers_invalid_start_busy_start_and_reset_restart(self):

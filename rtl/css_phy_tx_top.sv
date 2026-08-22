@@ -14,10 +14,10 @@ module css_phy_tx_top #(
   output logic signed [7:0] Tx_real,
   output logic signed [7:0] Tx_imag
 );
-  localparam logic RATE_SEL = (DATA_RATE != 0);
+  localparam logic RATE_SEL = (DATA_RATE == css_phy_pkg::RATE_250K);
   localparam logic [2:0] CHIRP_SEL = CHIRP_INDEX[2:0];
   localparam integer SAMPLE_DIV_W = (SAMPLE_DIV <= 1) ? 1 : $clog2(SAMPLE_DIV);
-  localparam logic [SAMPLE_DIV_W-1:0] SAMPLE_DIV_LAST = SAMPLE_DIV - 1;
+  localparam logic [SAMPLE_DIV_W-1:0] SAMPLE_DIV_LAST = SAMPLE_DIV_W'(SAMPLE_DIV - 1);
 
   logic [6:0] payload_rd_addr;
   logic [7:0] payload_rd_data;
@@ -37,15 +37,17 @@ module css_phy_tx_top #(
   logic signed [2:0] g0r,g0i,g1r,g1i,g2r,g2i,g3r,g3i;
   logic csk_group_ready;
   logic sample_ce;
-  logic [SAMPLE_DIV_W-1:0] sample_div_count;
   logic csk_busy;
-  logic csk_group_done;
+  /* verilator lint_off UNUSEDSIGNAL */
   logic sample_valid_int;
+  logic csk_group_done_unused;
+  /* verilator lint_on UNUSEDSIGNAL */
   logic signed [7:0] sample_real_int, sample_imag_int;
 
 `ifndef SYNTHESIS
   initial begin
-    if (DATA_RATE != 0 && DATA_RATE != 1) $error("DATA_RATE must be 0 (1 Mbps) or 1 (250 kbps)");
+    if (DATA_RATE != css_phy_pkg::RATE_1M && DATA_RATE != css_phy_pkg::RATE_250K)
+      $error("DATA_RATE must be 0 (1 Mbps) or 1 (250 kbps)");
     if (CHIRP_INDEX < 1 || CHIRP_INDEX > 4) $error("CHIRP_INDEX must be 1..4");
     if (SAMPLE_DIV < 1) $error("SAMPLE_DIV must be >= 1");
   end
@@ -56,7 +58,8 @@ module css_phy_tx_top #(
     .rd_addr(payload_rd_addr), .rd_data(payload_rd_data)
   );
 
-  assign controller_start = start_Tx && !tx_active && (payloadLength <= 8'd127);
+  assign controller_start = start_Tx && !tx_active &&
+                            (payloadLength <= css_phy_pkg::MAX_PAYLOAD_BYTES);
 
   css_tx_controller u_controller (
     .clk(clk), .reset(reset), .start(controller_start), .rate(RATE_SEL),
@@ -89,7 +92,7 @@ module css_phy_tx_top #(
     .s2_real(g2r), .s2_imag(g2i), .s3_real(g3r), .s3_imag(g3i),
     .busy(csk_busy), .sample_valid(sample_valid_int),
     .sample_real(sample_real_int), .sample_imag(sample_imag_int),
-    .group_done(csk_group_done)
+    .group_done(csk_group_done_unused)
   );
 
   assign Tx_real = sample_real_int;
@@ -97,10 +100,10 @@ module css_phy_tx_top #(
 
   generate
     if (SAMPLE_DIV == 1) begin : g_sample_ce_one
-      always_comb sample_ce = 1'b1;
-      always_ff @(posedge clk) sample_div_count <= '0;
+      assign sample_ce = 1'b1;
     end else begin : g_sample_ce_div
-      always_comb sample_ce = (sample_div_count == SAMPLE_DIV_LAST);
+      logic [SAMPLE_DIV_W-1:0] sample_div_count;
+      assign sample_ce = (sample_div_count == SAMPLE_DIV_LAST);
       always_ff @(posedge clk) begin
         if (reset || sample_ce) sample_div_count <= '0;
         else sample_div_count <= sample_div_count + 1'b1;
