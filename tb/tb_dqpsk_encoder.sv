@@ -5,6 +5,7 @@ module tb_dqpsk_encoder;
   logic signed [2:0] qr,qi,dr,di;
   logic out_valid;
   integer fd,rc,idx,vi,vq,er,ei,count;
+  reg [1023:0] header_line;
   always #5 clk=~clk;
   qpsk_mapper qm(.chip_i(chip_i),.chip_q(chip_q),.qpsk_real(qr),.qpsk_imag(qi));
   dqpsk_encoder dut(.clk(clk),.reset(reset),.init_packet(init_packet),.in_valid(in_valid),.accept(accept),
@@ -13,7 +14,9 @@ module tb_dqpsk_encoder;
     reset=1; repeat(2) @(posedge clk); reset=0;
     init_packet=1; @(posedge clk); #1; init_packet=0;
     fd=$fopen("vectors/dqpsk_unit.txt","r"); if(!fd)$fatal(1,"cannot open dqpsk vectors");
-    rc=$fscanf(fd,"%*s %*s %*s %*s %*s\n"); count=0;
+    rc=$fgets(header_line,fd);
+    if(rc==0)$fatal(1,"cannot read dqpsk vector header");
+    count=0;
     while(!$feof(fd)) begin
       rc=$fscanf(fd,"%d %d %d %d %d\n",idx,vi,vq,er,ei);
       if(rc==5) begin
