@@ -82,14 +82,14 @@ requirement: MSE < 0.005
 
 The numerical reconstruction also matches the supplied m=1 fixed-point sample vectors exactly for all 152 real and 152 imaginary active samples.
 
-## 9. Verification architecture
+## 9. Verification architecture and executed evidence
 
 The project contains two complementary layers:
 
 1. Python source/reference/architecture regression, including exact source-vector comparisons, full-chain integer reconstruction, bit-order tests, randomized deterministic tests and EDA-report parser tests.
-2. Self-checking SystemVerilog unit/integration testbenches executed by Icarus Verilog when available.
+2. Self-checking SystemVerilog unit/integration testbenches executed by Icarus Verilog.
 
-Before public publication, the tool-independent suite executed 46 Python tests with zero failures. The public GitHub workflow installs Icarus Verilog and Verilator and runs the same top-level verification driver so HDL compile/simulation/lint results come from actual tool execution.
+The tool-independent suite executes **46 Python tests**. GitHub Actions now also installs Icarus Verilog and Verilator and has executed the open-source HDL flow successfully. The CI evidence gate requires all RTL unit-test PASS markers, both protocol tests, every controller/top-level case in the required rate/payload matrix, the MSE acceptance result, and a strict warning-fatal Verilator `-Wall` pass. A clean lint run produces no Verilator diagnostics.
 
 Required integration matrix:
 
@@ -98,7 +98,7 @@ Required integration matrix:
 250 kbps: 0, 1, 3, 25, 127 bytes
 ```
 
-Each top-level test compares every emitted real/imaginary sample with deterministic golden data.
+Each top-level test compares every emitted real/imaginary sample with deterministic golden data. Missing Icarus/Verilator tools are not accepted as CI PASS; the evidence gate rejects BLOCKED or incomplete HDL evidence.
 
 ## 10. Synthesis and timing
 
@@ -124,6 +124,13 @@ FPGA_PART=<part> CLOCK_PERIOD_NS=31.250 vivado -mode batch -source scripts/vivad
 FPGA_PART=<part> vivado -mode batch -source scripts/vivado_impl.tcl
 ```
 
-## 12. Remaining target-dependent work
+## 12. Remaining external-tool / target-dependent work
 
-Full assignment completion still requires real HDL CI/local simulator evidence, real lint evidence, selection of an exact FPGA part/board, synthesis/place-and-route/timing evidence, board constraints, bitstream generation and on-board verification. These stages are deliberately not fabricated.
+The open-source Python, Icarus RTL regression and strict Verilator lint stages now have real CI evidence. Remaining work that cannot be truthfully completed without additional external tools or hardware is:
+
+- native MATLAB execution if the course requires a direct MATLAB rerun rather than the committed bit-accurate reconstruction and supplied-vector comparison;
+- selection of the exact FPGA part/board and clock target;
+- Vivado synthesis, place-and-route and constrained timing evidence;
+- board pin/I/O constraints, bitstream generation and on-board verification.
+
+These stages remain explicitly BLOCKED rather than being fabricated.

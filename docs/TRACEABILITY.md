@@ -4,27 +4,27 @@ This matrix separates **source/reference verification**, **RTL implementation**,
 
 | Area | Reference behavior | RTL / artifact | Evidence | Current evidence class |
 |---|---|---|---|---|
-| PHR | payload length bit 0..6 first, five zeros | `phr_generator.sv` | Python + HDL unit tests | source/reference verified; RTL implemented |
-| Padding | `N - mod(length,N)`, including full block at exact boundary | `zero_pad_framer.sv` | boundary tests | source/reference verified; RTL implemented |
-| Payload bit order | byte LSB-first | controller selector | asymmetric patterns 01/80/96/A5/3C | source/reference verified |
-| DEMUX | first bit → I, second → Q | `iq_demux.sv` | directed DEMUX + controller checks | source/reference verified; RTL implemented |
-| 1M mapper | 8 exact 4-chip codewords | `symbol_mapper_1m.sv` | supplied-table equality + exhaustive TB | source/reference verified |
-| 250k mapper | 64 exact 32-chip codewords | `symbol_mapper_250k.sv` | supplied-table equality + exhaustive TB | source/reference verified |
-| 250k interleaver | fixed 64-chip permutation | `bit_interleaver.sv` | permutation impulse test | source/reference verified |
-| Preamble/SFD | 32/80 preamble; rate-specific 16-chip SFD | `preamble_sfd_rom.sv` | full chip stream + unit TB | source/reference verified |
-| QPSK | exact MATLAB four-point orientation | `qpsk_mapper.sv` | exhaustive four combinations | source/reference verified |
-| DQPSK | `S[n]=X[n]S[n-4]`, initial fixed path `1+j` | `dqpsk_encoder.sv` | directed vectors + full integer pipeline | source/reference verified |
-| Chirp ROM | 4 chirps × 152 active samples | `chirp_rom.sv`, generated `.mem` | all four equations; m=1 exact supplied vector | verified at numerical/ROM level |
-| CSK | four DQPSK symbols × four subchirps + gap | `csk_modulator.sv` | two-group TB + full-chain reference | reference verified; RTL implemented |
-| gaps | 10/70, 20/60, 30/50, 40/40 | `csk_modulator.sv` | gap-table test | reference verified |
+| PHR | payload length bit 0..6 first, five zeros | `phr_generator.sv` | Python + HDL unit tests | source/reference verified; RTL executed in CI |
+| Padding | `N - mod(length,N)`, including full block at exact boundary | `zero_pad_framer.sv` | boundary tests | source/reference verified; RTL executed in CI |
+| Payload bit order | byte LSB-first | controller selector | asymmetric patterns 01/80/96/A5/3C | source/reference verified; RTL executed in CI |
+| DEMUX | first bit → I, second → Q | `iq_demux.sv` | directed DEMUX + controller checks | source/reference verified; RTL executed in CI |
+| 1M mapper | 8 exact 4-chip codewords | `symbol_mapper_1m.sv` | supplied-table equality + exhaustive TB | source/reference + RTL verified |
+| 250k mapper | 64 exact 32-chip codewords | `symbol_mapper_250k.sv` | supplied-table equality + exhaustive TB | source/reference + RTL verified |
+| 250k interleaver | fixed 64-chip permutation | `bit_interleaver.sv` | permutation impulse test | source/reference + RTL verified |
+| Preamble/SFD | 32/80 preamble; rate-specific 16-chip SFD | `preamble_sfd_rom.sv` | full chip stream + unit TB | source/reference + RTL verified |
+| QPSK | exact MATLAB four-point orientation | `qpsk_mapper.sv` | exhaustive four combinations | source/reference + RTL verified |
+| DQPSK | `S[n]=X[n]S[n-4]`, initial fixed path `1+j` | `dqpsk_encoder.sv` | directed vectors + full integer pipeline | source/reference + RTL verified |
+| Chirp ROM | 4 chirps × 152 active samples | `chirp_rom.sv`, generated `.mem` | all four equations; m=1 exact supplied vector | numerical/ROM + RTL verified |
+| CSK | four DQPSK symbols × four subchirps + gap | `csk_modulator.sv` | two-group TB + full-chain reference | reference + RTL verified |
+| gaps | 10/70, 20/60, 30/50, 40/40 | `csk_modulator.sv` | gap-table test | reference + RTL verified |
 | fixed point | signed 6-bit `floor` chirp quantization | six-bit ROMs | exact supplied m=1 vector | verified |
 | MSE | normalized threshold < 0.005 | MSE script | 0.000891330083552 at 6-bit floor | verified |
-| 1 Mbps | complete packet path | `DATA_RATE=0` | required payload matrix + randomized reference checks | reference/architecture verified |
-| 250 kbps | complete packet path | `DATA_RATE=1` | required payload matrix + randomized reference checks | reference/architecture verified |
-| reset/start rules | one active packet, synchronous reset | top/controller | protocol TB | RTL test prepared; simulator result depends on actual run |
-| done_Tx | after source + CSK queue drain | top | top-level scoreboard | RTL test prepared |
-| open-source HDL regression | compile + simulate all TBs | `run_rtl_tests.sh` | Icarus logs | actual CI/local result required |
-| lint | width/signedness/static RTL quality | `run_lint.sh` | Verilator log | actual CI/local result required |
+| 1 Mbps | complete packet path | `DATA_RATE=0` | payload matrix 0/1/3/25/127 + protocol TB | GitHub Actions RTL PASS |
+| 250 kbps | complete packet path | `DATA_RATE=1` | payload matrix 0/1/3/25/127 + protocol TB | GitHub Actions RTL PASS |
+| reset/start rules | one active packet, synchronous reset | top/controller | protocol TB | GitHub Actions protocol PASS, both rates |
+| done_Tx | after source + CSK queue drain | top | top-level scoreboard | GitHub Actions matrix PASS |
+| open-source HDL regression | compile + simulate all TBs | `run_rtl_tests.sh` | Icarus logs + CI evidence gate | PASS; unit markers and full rate/payload matrix enforced |
+| lint | width/signedness/static RTL quality | `run_lint.sh` | strict Verilator `-Wall` log | PASS; warnings are fatal and clean run emits no diagnostics |
 | synthesis | real FPGA netlist | Vivado Tcl | utilization + synthesis log | blocked until exact target/tool exists |
 | timing | constrained post-route timing | Vivado implementation flow | clocks + WNS/TNS + route reports | blocked until exact target/tool exists |
 | bitstream/board | physical target behavior | board-specific constraints | bitstream + hardware capture | blocked until board/pins/hardware exist |
@@ -40,9 +40,11 @@ ROM/vector generation + MSE
         ↓
 46 tool-independent tests
         ↓
-SystemVerilog unit/integration regression
+Icarus SystemVerilog unit/integration regression
         ↓
-Verilator lint
+strict warning-fatal Verilator -Wall lint
+        ↓
+CI evidence-integrity gate
         ↓
 Vivado synthesis/implementation (only with explicit target)
         ↓
