@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+results/sim/
+reports/vivado/
+*.jou
+*.log
+.Xil/
+*.dcp
+*.bit
+!reports/reference_test_run.log
+!reports/run_all.log
+
+# Generated local verification summaries (reproducible via make verify)
+reports/verification_summary.json
+reports/verification_summary.txt

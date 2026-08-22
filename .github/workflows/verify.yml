@@ -1,0 +1,50 @@
+name: CSS PHY Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  open-source-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Python dependency
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Install open-source HDL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog verilator
+
+      - name: Run evidence-driven verification
+        run: make verify
+
+      - name: Preserve verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: css-phy-verification-evidence
+          if-no-files-found: warn
+          path: |
+            reports/verification_summary.json
+            reports/verification_summary.txt
+            reports/*test*.log
+            reports/rtl_regression.log
+            reports/verilator_lint.log
+            reports/mse_results.csv
+            reports/mse_all_chirps.csv
