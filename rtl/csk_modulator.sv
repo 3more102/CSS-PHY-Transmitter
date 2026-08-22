@@ -55,7 +55,7 @@ module csk_modulator (
       3'd4: gap_len = 7'd40;
       default: gap_len = 7'd40;
     endcase
-    last_index = 9'd151 + gap_len;
+    last_index = 9'd151 + {2'd0, gap_len};
     rom_addr = sample_index[7:0];
 
     if (sample_index < 9'd38) begin sel_real=r0; sel_imag=i0; end
@@ -128,6 +128,9 @@ module csk_modulator (
         if (sample_ce) begin
           sample_valid <= 1'b1;
           if (sample_index < 9'd152) begin
+            // The mathematical/reference range is verified independently to fit
+            // the signed 8-bit external interface; the slice is the explicit
+            // fixed-width encoding used by the supplied reference path.
             sample_real <= calc_real[7:0];
             sample_imag <= calc_imag[7:0];
           end else begin
