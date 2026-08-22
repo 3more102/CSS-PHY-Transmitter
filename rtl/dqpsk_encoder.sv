@@ -22,8 +22,10 @@ module dqpsk_encoder (
               - $signed(in_imag) * $signed(fb_imag[phase]);
     calc_imag = $signed(in_real) * $signed(fb_imag[phase])
               + $signed(in_imag) * $signed(fb_real[phase]);
-    out_real = calc_real[2:0];
-    out_imag = calc_imag[2:0];
+    // Explicit sized casts preserve the supplied fixed-width wrap semantics
+    // while making the intentional narrowing visible to lint/synthesis tools.
+    out_real = 3'(calc_real);
+    out_imag = 3'(calc_imag);
     out_valid = in_valid && accept;
   end
 
