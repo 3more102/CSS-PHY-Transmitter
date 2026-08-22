@@ -18,8 +18,10 @@ Synthesizable IEEE 802.15.4 Chirp Spread Spectrum (CSS) PHY transmitter derived 
 - deterministic Python reference model and golden-vector generation
 - unit and full-chain self-checking SystemVerilog testbenches
 - deterministic randomized regression
-- Vivado synthesis/implementation flow that refuses to invent an FPGA target
+- strict warning-fatal Verilator `-Wall` lint
 - GitHub Actions verification with Icarus Verilog + Verilator
+- evidence-integrity gate that rejects incomplete RTL/lint results
+- Vivado synthesis/implementation flow that refuses to invent an FPGA target
 
 ## Top-level interface
 
@@ -54,17 +56,17 @@ Run RTL regression directly:
 make rtl
 ```
 
-Run Verilator lint:
+Run strict Verilator lint:
 
 ```bash
 make lint
 ```
 
-The committed verification driver distinguishes `PASS`, `FAIL`, `SKIP`, and `BLOCKED`; missing tools are never reported as PASS.
+The committed verification driver distinguishes `PASS`, `FAIL`, `SKIP`, and `BLOCKED`; missing tools are never reported as PASS. GitHub Actions additionally runs `scripts/require_ci_evidence.py`, which requires the open-source HDL stages to actually execute and pass.
 
 ### Established source/reference evidence
 
-Before publication, the tool-independent regression executed **46 Python tests with 0 failures**. It established:
+The tool-independent regression executes **46 Python tests** and establishes:
 
 - exact supplied 1 Mbps/250 kbps codeword-table agreement;
 - exact supplied 152-real + 152-imag m=1 chirp-vector agreement;
@@ -74,7 +76,18 @@ Before publication, the tool-independent regression executed **46 Python tests w
 - deterministic randomized equivalence with seed `0x802154`;
 - six-bit `floor` quantization MSE = **0.000891330083552**, below the required `0.005` threshold.
 
-RTL simulator/lint status is determined by actual local or CI execution; synthesis/timing remains target-dependent and is not fabricated.
+### Executed open-source HDL evidence
+
+GitHub Actions has executed the Icarus/Verilator flow successfully. The CI evidence gate requires:
+
+- every unit-test PASS marker;
+- protocol PASS for both rates;
+- controller and top-level PASS for payloads `0, 1, 3, 25, 127` at both rates;
+- fixed-point MSE acceptance;
+- strict Verilator `-Wall` success with warnings treated as fatal;
+- no Verilator warning/error diagnostics in the preserved lint log.
+
+Synthesis/timing remains target-dependent and is not fabricated.
 
 ## Fixed point
 
