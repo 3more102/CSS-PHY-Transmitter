@@ -2,6 +2,7 @@
 reference:
 	./scripts/run_reference_tests.sh
 rtl:
+	python3 matlab/vector_generation/generate_vectors.py
 	./scripts/run_rtl_tests.sh
 lint:
 	./scripts/run_lint.sh
