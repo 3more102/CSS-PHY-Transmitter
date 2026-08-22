@@ -13,19 +13,19 @@ module dqpsk_encoder (
   logic signed [2:0] fb_real [0:3];
   logic signed [2:0] fb_imag [0:3];
   logic [1:0] phase;
-  logic signed [6:0] calc_real;
-  logic signed [6:0] calc_imag;
   integer k;
 
   always_comb begin
-    calc_real = $signed(in_real) * $signed(fb_real[phase])
-              - $signed(in_imag) * $signed(fb_imag[phase]);
-    calc_imag = $signed(in_real) * $signed(fb_imag[phase])
-              + $signed(in_imag) * $signed(fb_real[phase]);
     // Explicit sized casts preserve the supplied fixed-width wrap semantics
-    // while making the intentional narrowing visible to lint/synthesis tools.
-    out_real = 3'(calc_real);
-    out_imag = 3'(calc_imag);
+    // while avoiding an implicit truncation of wider intermediate products.
+    out_real = 3'(
+      $signed(in_real) * $signed(fb_real[phase])
+      - $signed(in_imag) * $signed(fb_imag[phase])
+    );
+    out_imag = 3'(
+      $signed(in_real) * $signed(fb_imag[phase])
+      + $signed(in_imag) * $signed(fb_real[phase])
+    );
     out_valid = in_valid && accept;
   end
 

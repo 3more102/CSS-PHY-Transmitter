@@ -34,7 +34,7 @@ module csk_modulator (
   logic enqueue;
 
   logic signed [8:0] mult_rr, mult_ii, mult_ri, mult_ir;
-  logic signed [9:0] calc_real, calc_imag;
+  logic signed [7:0] calc_real_8, calc_imag_8;
 
   chirp_rom u_chirp_rom (
     .chirp_index(stored_index), .addr(rom_addr),
@@ -55,20 +55,20 @@ module csk_modulator (
       3'd4: gap_len = 7'd40;
       default: gap_len = 7'd40;
     endcase
-    last_index = 9'd151 + {2'd0, gap_len};
+    last_index = (css_phy_pkg::ACTIVE_CHIRP_SAMPLES - 9'd1) + {2'd0, gap_len};
     rom_addr = sample_index[7:0];
 
-    if (sample_index < 9'd38) begin sel_real=r0; sel_imag=i0; end
-    else if (sample_index < 9'd76) begin sel_real=r1; sel_imag=i1; end
-    else if (sample_index < 9'd114) begin sel_real=r2; sel_imag=i2; end
+    if (sample_index < css_phy_pkg::TSUB_SAMPLES) begin sel_real=r0; sel_imag=i0; end
+    else if (sample_index < (css_phy_pkg::TSUB_SAMPLES << 1)) begin sel_real=r1; sel_imag=i1; end
+    else if (sample_index < (css_phy_pkg::TSUB_SAMPLES + (css_phy_pkg::TSUB_SAMPLES << 1))) begin sel_real=r2; sel_imag=i2; end
     else begin sel_real=r3; sel_imag=i3; end
 
     mult_rr = $signed(chirp_real) * $signed(sel_real);
     mult_ii = $signed(chirp_imag) * $signed(sel_imag);
     mult_ri = $signed(chirp_real) * $signed(sel_imag);
     mult_ir = $signed(chirp_imag) * $signed(sel_real);
-    calc_real = $signed(mult_rr) - $signed(mult_ii);
-    calc_imag = $signed(mult_ri) + $signed(mult_ir);
+    calc_real_8 = 8'($signed(mult_rr) - $signed(mult_ii));
+    calc_imag_8 = 8'($signed(mult_ri) + $signed(mult_ir));
   end
 
   task automatic load_current_from_input;
@@ -127,12 +127,9 @@ module csk_modulator (
       end else begin
         if (sample_ce) begin
           sample_valid <= 1'b1;
-          if (sample_index < 9'd152) begin
-            // The verified mathematical range fits the signed 8-bit interface;
-            // explicit sized casts document the fixed-width encoding while
-            // preserving the same low-bit representation as the reference.
-            sample_real <= 8'(calc_real);
-            sample_imag <= 8'(calc_imag);
+          if (sample_index < css_phy_pkg::ACTIVE_CHIRP_SAMPLES) begin
+            sample_real <= calc_real_8;
+            sample_imag <= calc_imag_8;
           end else begin
             sample_real <= 8'sd0;
             sample_imag <= 8'sd0;

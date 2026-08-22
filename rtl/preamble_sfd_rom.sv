@@ -4,12 +4,11 @@ module preamble_sfd_rom (
   output logic       chip,
   output logic       valid
 );
-  localparam logic [15:0] SFD_1M   = 16'b0111010010011100;
-  localparam logic [15:0] SFD_250K = 16'b0111101000100011;
+  localparam logic [css_phy_pkg::SFD_BITS-1:0] SFD_1M   = 16'b0111010010011100;
+  localparam logic [css_phy_pkg::SFD_BITS-1:0] SFD_250K = 16'b0111101000100011;
 
-  // Keep all comparisons and vector indices explicitly sized. Both preamble
-  // lengths are multiples of 16, so index[3:0] is the SFD-local offset in
-  // the 16-chip SFD windows.
+  // Both preamble lengths are multiples of 16, so index[3:0] is the SFD-local
+  // offset in the 16-chip SFD windows. All comparisons and indices are sized.
   always_comb begin
     chip = 1'b0;
     valid = 1'b0;

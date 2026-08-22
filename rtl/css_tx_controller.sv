@@ -50,8 +50,6 @@ module css_tx_controller (
   logic [2:0] bit_select;
   logic [6:0] sync_last;
   logic [10:0] payload_pair_end;
-  // The pad count is intentionally observed at this hierarchy boundary even
-  // though only total_bits is needed by the controller datapath.
   /* verilator lint_off UNUSEDSIGNAL */
   logic [5:0] pad_bits_unused;
   /* verilator lint_on UNUSEDSIGNAL */
@@ -80,9 +78,6 @@ module css_tx_controller (
   bit_interleaver u_inter_i (.in_bits(inter_i_in), .out_bits(inter_i_out));
   bit_interleaver u_inter_q (.in_bits(inter_q_in), .out_bits(inter_q_out));
 
-  // Address generation is deliberately separated from payload-data selection.
-  // payload_rd_addr depends only on registered counters, breaking the apparent
-  // async-RAM combinational loop seen by static lint tools.
   always_comb begin
     total_pairs = total_bits >> 1;
     sync_last = rate ? 7'd95 : 7'd47;
@@ -91,7 +86,6 @@ module css_tx_controller (
     bit_select = 3'd0;
     payload_rd_addr = 7'd0;
     if ((pair_index >= 11'd6) && (pair_index < payload_pair_end)) begin
-      // Maximum legal value is 507 for a 127-byte payload; nine bits are exact.
       pair_payload_index = 9'(pair_index - 11'd6);
       payload_rd_addr = pair_payload_index[8:2];
       bit_select = {pair_payload_index[1:0], 1'b0};
@@ -155,7 +149,7 @@ module css_tx_controller (
       source_done <= 1'b0;
       case (state)
         ST_IDLE: begin
-          if (start && payload_length <= 8'd127) begin
+          if (start && payload_length <= css_phy_pkg::MAX_PAYLOAD_BYTES) begin
             payload_length_r <= payload_length;
             sync_index <= 7'd0;
             pair_index <= 11'd0;
