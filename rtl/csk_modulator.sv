@@ -128,11 +128,11 @@ module csk_modulator (
         if (sample_ce) begin
           sample_valid <= 1'b1;
           if (sample_index < 9'd152) begin
-            // The mathematical/reference range is verified independently to fit
-            // the signed 8-bit external interface; the slice is the explicit
-            // fixed-width encoding used by the supplied reference path.
-            sample_real <= calc_real[7:0];
-            sample_imag <= calc_imag[7:0];
+            // The verified mathematical range fits the signed 8-bit interface;
+            // explicit sized casts document the fixed-width encoding while
+            // preserving the same low-bit representation as the reference.
+            sample_real <= 8'(calc_real);
+            sample_imag <= 8'(calc_imag);
           end else begin
             sample_real <= 8'sd0;
             sample_imag <= 8'sd0;
