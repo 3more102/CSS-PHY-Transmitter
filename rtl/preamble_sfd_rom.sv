@@ -7,9 +7,9 @@ module preamble_sfd_rom (
   localparam logic [15:0] SFD_1M   = 16'b0111010010011100;
   localparam logic [15:0] SFD_250K = 16'b0111101000100011;
 
-  // Keep all comparisons explicitly sized.  The two rate branches are
-  // intentionally written out because their preamble lengths are constants;
-  // this avoids inferred temporary state and makes the SFD index bounds clear.
+  // Keep all comparisons and vector indices explicitly sized. Both preamble
+  // lengths are multiples of 16, so index[3:0] is the SFD-local offset in
+  // the 16-chip SFD windows.
   always_comb begin
     chip = 1'b0;
     valid = 1'b0;
@@ -18,7 +18,7 @@ module preamble_sfd_rom (
         chip = 1'b1;
         valid = 1'b1;
       end else if (index < 7'd48) begin
-        chip = SFD_1M[7'd47 - index];
+        chip = SFD_1M[4'd15 - index[3:0]];
         valid = 1'b1;
       end
     end else begin
@@ -26,7 +26,7 @@ module preamble_sfd_rom (
         chip = 1'b1;
         valid = 1'b1;
       end else if (index < 7'd96) begin
-        chip = SFD_250K[7'd95 - index];
+        chip = SFD_250K[4'd15 - index[3:0]];
         valid = 1'b1;
       end
     end
