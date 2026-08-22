@@ -17,7 +17,7 @@ module css_phy_tx_top #(
   localparam logic RATE_SEL = (DATA_RATE != 0);
   localparam logic [2:0] CHIRP_SEL = CHIRP_INDEX[2:0];
   localparam integer SAMPLE_DIV_W = (SAMPLE_DIV <= 1) ? 1 : $clog2(SAMPLE_DIV);
-  localparam logic [SAMPLE_DIV_W-1:0] SAMPLE_DIV_LAST = SAMPLE_DIV - 1;
+  localparam logic [SAMPLE_DIV_W-1:0] SAMPLE_DIV_LAST = SAMPLE_DIV_W'(SAMPLE_DIV - 1);
 
   logic [6:0] payload_rd_addr;
   logic [7:0] payload_rd_data;
@@ -37,10 +37,12 @@ module css_phy_tx_top #(
   logic signed [2:0] g0r,g0i,g1r,g1i,g2r,g2i,g3r,g3i;
   logic csk_group_ready;
   logic sample_ce;
-  logic [SAMPLE_DIV_W-1:0] sample_div_count;
   logic csk_busy;
-  logic csk_group_done;
+  // Kept as a named internal observation point for the self-checking top-level
+  // testbench; the assignment interface itself intentionally has no valid pin.
+  /* verilator lint_off UNUSEDSIGNAL */
   logic sample_valid_int;
+  /* verilator lint_on UNUSEDSIGNAL */
   logic signed [7:0] sample_real_int, sample_imag_int;
 
 `ifndef SYNTHESIS
@@ -89,7 +91,7 @@ module css_phy_tx_top #(
     .s2_real(g2r), .s2_imag(g2i), .s3_real(g3r), .s3_imag(g3i),
     .busy(csk_busy), .sample_valid(sample_valid_int),
     .sample_real(sample_real_int), .sample_imag(sample_imag_int),
-    .group_done(csk_group_done)
+    .group_done()
   );
 
   assign Tx_real = sample_real_int;
@@ -97,10 +99,10 @@ module css_phy_tx_top #(
 
   generate
     if (SAMPLE_DIV == 1) begin : g_sample_ce_one
-      always_comb sample_ce = 1'b1;
-      always_ff @(posedge clk) sample_div_count <= '0;
+      assign sample_ce = 1'b1;
     end else begin : g_sample_ce_div
-      always_comb sample_ce = (sample_div_count == SAMPLE_DIV_LAST);
+      logic [SAMPLE_DIV_W-1:0] sample_div_count;
+      assign sample_ce = (sample_div_count == SAMPLE_DIV_LAST);
       always_ff @(posedge clk) begin
         if (reset || sample_ce) sample_div_count <= '0;
         else sample_div_count <= sample_div_count + 1'b1;
