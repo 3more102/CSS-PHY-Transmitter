@@ -46,13 +46,21 @@ module css_tx_controller (
   logic pair_i, pair_q;
   logic demux_i_valid, demux_q_valid;
 
-  logic [10:0] pair_payload_index;
+  logic [8:0] pair_payload_index;
   logic [2:0] bit_select;
   logic [6:0] sync_last;
   logic [10:0] payload_pair_end;
+  // The pad count is intentionally observed at this hierarchy boundary even
+  // though only total_bits is needed by the controller datapath.
+  /* verilator lint_off UNUSEDSIGNAL */
+  logic [5:0] pad_bits_unused;
+  /* verilator lint_on UNUSEDSIGNAL */
 
   phr_generator u_phr (.payload_length(payload_length_r), .phr_bits(phr));
-  zero_pad_framer u_pad (.rate(rate), .payload_length(payload_length_r), .pad_bits(), .total_bits(total_bits));
+  zero_pad_framer u_pad (
+    .rate(rate), .payload_length(payload_length_r),
+    .pad_bits(pad_bits_unused), .total_bits(total_bits)
+  );
   preamble_sfd_rom u_sync_rom (.rate(rate), .index(sync_index), .chip(sync_chip), .valid(sync_valid));
 
   iq_demux u_demux (
@@ -79,11 +87,12 @@ module css_tx_controller (
     total_pairs = total_bits >> 1;
     sync_last = rate ? 7'd95 : 7'd47;
     payload_pair_end = 11'd6 + ({3'd0, payload_length_r} << 2);
-    pair_payload_index = 11'd0;
+    pair_payload_index = 9'd0;
     bit_select = 3'd0;
     payload_rd_addr = 7'd0;
     if ((pair_index >= 11'd6) && (pair_index < payload_pair_end)) begin
-      pair_payload_index = pair_index - 11'd6;
+      // Maximum legal value is 507 for a 127-byte payload; nine bits are exact.
+      pair_payload_index = 9'(pair_index - 11'd6);
       payload_rd_addr = pair_payload_index[8:2];
       bit_select = {pair_payload_index[1:0], 1'b0};
     end
