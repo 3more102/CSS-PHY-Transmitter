@@ -1,0 +1,8 @@
+rate0_len20_m1 0 20 1 7842
+rate0_len55_m1 0 55 1 16896
+rate0_len127_m1 0 127 1 35328
+rate1_len20_m1 1 20 1 29184
+rate1_len55_m1 1 55 1 62976
+rate1_len127_m1 1 127 1 136704
+rate0_len25_m2 0 25 2 9216
+rate1_len40_m4 1 40 4 47616
