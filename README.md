@@ -87,7 +87,9 @@ The committed verification driver distinguishes `PASS`, `FAIL`, `SKIP`, and `BLO
 
 ### Established source/reference evidence
 
-The tool-independent regression executes **64 Python tests** and establishes:
+The tool-independent regression executes **69 Python tests**; the CI evidence
+gate pins `MIN_PYTHON_TESTS` to the current suite size, so silently losing any
+test fails CI. The suite establishes:
 
 - exact supplied 1 Mbps/250 kbps codeword-table agreement;
 - exact supplied 152-real + 152-imag m=1 chirp-vector agreement;
