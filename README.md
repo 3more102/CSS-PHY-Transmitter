@@ -68,6 +68,15 @@ exit 0, every test must emit its expected PASS marker, and any `** Error`,
 `** Failure` or `** Fatal` diagnostic fails the regression (older ModelSim
 builds exit 0 even after `$fatal`, so transcript scanning is mandatory there).
 
+Both drivers additionally accept an opt-in extended deterministic stress soak
+(120 packets per rate from the independent extended seed `0xE717E51D`, vs the
+24-packet CI seed `0xC5C5C5A5`):
+
+```bash
+CSS_STRESS_EXT=1 make rtl          # Icarus Verilog
+CSS_STRESS_EXT=1 python scripts/run_rtl_tests_msim.py   # ModelSim/Questasim
+```
+
 Run strict Verilator lint:
 
 ```bash

@@ -92,4 +92,19 @@ for div in 2 5; do
   done
 done
 
+# Extended deterministic stress soak (opt-in via CSS_STRESS_EXT=1): 120
+# packets per rate from the independent extended seed, mirroring the ModelSim
+# driver so both regressions can exercise identical extended coverage.
+if [[ ${CSS_STRESS_EXT:-0} == 1 ]]; then
+  for rate in 1m 250k; do
+    defs=()
+    [[ $rate == 250k ]] && defs=(-DRATE250)
+    echo "== stress ext ${rate} =="
+    iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_stress -o "results/sim/stress_${rate}_ext.vvp" "${RTL[@]}" tb/tb_css_phy_tx_stress.sv
+    vvp "results/sim/stress_${rate}_ext.vvp" \
+      "+SCHEDULE=vectors/stress_${rate}_ext_index.txt" \
+      "+RATETAG=${rate}_ext"
+  done
+fi
+
 echo "PASS: complete RTL regression"

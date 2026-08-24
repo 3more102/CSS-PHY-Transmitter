@@ -77,9 +77,12 @@ def run(cmd: list[str], log_name: str) -> tuple[int, str]:
 class Driver:
     def __init__(self) -> None:
         self.failures: list[str] = []
+        self.sim_count = 0
 
     def check(self, name: str, marker: str | None, rc: int, out: str) -> None:
         problems = []
+        if marker is not None:
+            self.sim_count += 1
         if rc != 0:
             problems.append(f"exit code {rc}")
         if ERROR_RE.search(out):
@@ -219,7 +222,19 @@ def main() -> int:
                        rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp=\d+ sdiv={div} samples=\d+",
                        search_libs=["work_base"])
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 3) + 2 * 3 + 2 * 2
+    # Optional extended deterministic stress soak (opt-in via CSS_STRESS_EXT=1):
+    # 120 packets per rate from the independent STRESS_SEED_EXT schedule,
+    # including zero-gap back-to-back starts and length corners.
+    ext_stress = os.environ.get("CSS_STRESS_EXT", "").strip() == "1"
+    if ext_stress:
+        for rate, lib in (("1m_ext", "work_base"), ("250k_ext", "work_250k")):
+            d.simulate(vsim, lib, "tb_css_phy_tx_stress", f"stress_{rate}",
+                       [f"+SCHEDULE=vectors/stress_{rate}_index.txt",
+                        f"+RATETAG={rate}"],
+                       r"PASS tb_css_phy_tx_stress rate=\d+ packets=120")
+
+    total = d.sim_count
+    scope = "incl. extended stress soak, " if ext_stress else ""
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:
@@ -227,7 +242,7 @@ def main() -> int:
         print("FAIL: complete RTL regression")
         return 1
     print("\nPASS: complete RTL regression "
-          f"({total} simulations: {len(UNIT_TBS)} unit + 2 rates x (protocol + controller/top x {len(LENGTHS)} lengths + multi + reset + stress))")
+          f"({total} simulations {scope}{len(UNIT_TBS)} unit + 2 rates x (protocol + controller/top x {len(LENGTHS)} lengths + multi + reset + stress))")
     return 0
 
 
