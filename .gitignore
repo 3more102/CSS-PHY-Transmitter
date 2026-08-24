@@ -16,5 +16,9 @@ reports/verification_summary.txt
 results/msim/
 /transcript
 
+# All other reports/ content is generated verification evidence, preserved as
+# CI artifacts rather than tracked source.
+/reports/
+
 # Generated golden/reference vectors
 /vectors/
