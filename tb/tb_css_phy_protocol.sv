@@ -15,6 +15,7 @@ module tb_css_phy_protocol;
   logic done_Tx;
   logic signed [7:0] Tx_real, Tx_imag;
   integer samples;
+  logic restart_done, held_done;
 
   always #5 clk=~clk;
 
@@ -67,13 +68,14 @@ module tb_css_phy_protocol;
 
     samples=0;
     pulse_start();
-    forever begin
+    restart_done=0;
+    while(!restart_done) begin
       @(posedge clk); #1;
       if(dut.sample_valid_int) samples=samples+1;
       if(done_Tx) begin
         if(samples!=EXPECTED_SAMPLES)
           $fatal(1,"rate=%0d restart sample count expected=%0d got=%0d",RATE,EXPECTED_SAMPLES,samples);
-        break;
+        restart_done=1;
       end
     end
 
@@ -83,13 +85,14 @@ module tb_css_phy_protocol;
     samples=0;
     @(negedge clk); start_Tx=1;
     wait(dut.tx_active);
-    forever begin
+    held_done=0;
+    while(!held_done) begin
       @(posedge clk); #1;
       if(dut.sample_valid_int) samples=samples+1;
       if(done_Tx) begin
         if(samples!=EXPECTED_SAMPLES)
           $fatal(1,"rate=%0d held-start packet expected=%0d got=%0d",RATE,EXPECTED_SAMPLES,samples);
-        break;
+        held_done=1;
       end
     end
     @(negedge clk); start_Tx=0;
