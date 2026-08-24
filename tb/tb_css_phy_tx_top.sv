@@ -14,6 +14,13 @@ module tb_css_phy_tx_top;
 `else
   localparam integer CHIRP=1;
 `endif
+`ifdef SAMPLE_DIV_2
+  localparam integer SDIV=2;
+`elsif SAMPLE_DIV_5
+  localparam integer SDIV=5;
+`else
+  localparam integer SDIV=1;
+`endif
   logic clk=0,reset=0,start_Tx=0,payload_wr_en=0;
   logic [7:0] payloadLength;
   logic [6:0] payload_addr=0;
@@ -26,7 +33,7 @@ module tb_css_phy_tx_top;
   reg [1023:0] payload_path,samples_path;
   always #5 clk=~clk;
 
-  css_phy_tx_top #(.DATA_RATE(RATE),.CHIRP_INDEX(CHIRP)) dut(
+  css_phy_tx_top #(.DATA_RATE(RATE),.CHIRP_INDEX(CHIRP),.SAMPLE_DIV(SDIV)) dut(
     .clk(clk),.reset(reset),.start_Tx(start_Tx),.payloadLength(payloadLength),
     .payload_wr_en(payload_wr_en),.payload_addr(payload_addr),.payload_din(payload_din),
     .done_Tx(done_Tx),.Tx_real(Tx_real),.Tx_imag(Tx_imag));
@@ -60,11 +67,16 @@ module tb_css_phy_tx_top;
                  RATE,plen,count,exp_r,exp_i,Tx_real,Tx_imag);
         count=count+1;
       end else if(stream_started && !done_Tx) begin
-        $fatal(1,"sample stream bubble after sample %0d",count);
+        // A gap between valid samples is part of the SAMPLE_DIV contract:
+        // the strict no-bubble-per-cycle check only applies at SDIV==1.
+        // For SDIV>1 stream integrity is enforced by golden value alignment
+        // (any dropped/inserted sample desynchronizes and fails below).
+        if(SDIV==1)
+          $fatal(1,"sample stream bubble after sample %0d",count);
       end
       if(done_Tx) begin
         rc=$fscanf(sfd,"%h %h\n",exp_r,exp_i); if(rc==2)$fatal(1,"done_Tx asserted before vector EOF");
-        $fclose(sfd); $display("PASS tb_css_phy_tx_top rate=%0d plen=%0d chirp=%0d samples=%0d",RATE,plen,CHIRP,count); $finish;
+        $fclose(sfd); $display("PASS tb_css_phy_tx_top rate=%0d plen=%0d chirp=%0d sdiv=%0d samples=%0d",RATE,plen,CHIRP,SDIV,count); $finish;
       end
     end
   end

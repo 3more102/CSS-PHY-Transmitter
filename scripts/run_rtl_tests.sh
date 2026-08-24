@@ -67,4 +67,18 @@ for m in 2 3 4; do
   done
 done
 
+# SAMPLE_DIV sweep: output values must be identical to SAMPLE_DIV=1, only
+# time-stretched; the same golden vectors validate the clock divider.
+for div in 2 5; do
+  for rate in 1m 250k; do
+    defs=(-DSAMPLE_DIV_${div})
+    [[ $rate == 250k ]] && defs+=(-DRATE250)
+    echo "== top ${rate} sdiv${div} =="
+    iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_top -o "results/sim/top_${rate}_sdiv${div}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_top.sv
+    vvp "results/sim/top_${rate}_sdiv${div}.vvp" \
+      "+PLEN=25" "+PAYLOAD=vectors/full_${rate}_len25_payload.hex" \
+      "+SAMPLES=vectors/full_${rate}_len25_samples.hex"
+  done
+done
+
 echo "PASS: complete RTL regression"

@@ -147,7 +147,7 @@ def main() -> int:
                        rf"PASS tb_css_tx_controller rate=\d+ plen={length} chips=\d+")
             d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_len{length}",
                        common + [f"+SAMPLES=vectors/full_{rate}_len{length}_samples.hex"],
-                       rf"PASS tb_css_phy_tx_top rate=\d+ plen={length} chirp=\d+ samples=\d+")
+                       rf"PASS tb_css_phy_tx_top rate=\d+ plen={length} chirp=\d+ sdiv=\d+ samples=\d+")
         # Back-to-back packets: equal length + distinct contents between
         # packets 1 and 2 detects cross-packet state leakage.
         multi_args = [
@@ -179,10 +179,31 @@ def main() -> int:
             d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_chirpm{m}",
                        ["+PLEN=25", "+PAYLOAD=vectors/chirp_sweep_payload.hex",
                         f"+SAMPLES=vectors/full_{rate}_len25_chirpm{m}_samples.hex"],
-                       rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp={m} samples=\d+",
+                       rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp={m} sdiv=1 samples=\d+",
                        search_libs=["work_base"])
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1) + 2 * 3
+    # SAMPLE_DIV sweep: the output sample stream must be value-identical to
+    # SAMPLE_DIV=1, only time-stretched; the same golden vectors therefore
+    # validate the divider. div=2 exercises clog2()==1, div=5 a prime period.
+    for rate in ("1m", "250k"):
+        rate_defs = ["RATE250"] if rate == "250k" else []
+        for div in (2, 5):
+            lib = f"work_{rate}_sdiv{div}"
+            libpath = SIM_DIR / lib
+            if libpath.exists():
+                shutil.rmtree(libpath)
+            rc, _ = run([vlib_tool, str(libpath)], f"vlib_{lib}.log")
+            if rc != 0:
+                print(f"FAIL vlib {lib}", file=sys.stderr)
+                return 2
+            d.compile(vlog, lib, [f"tb/tb_css_phy_tx_top.sv"], rate_defs + [f"SAMPLE_DIV_{div}"])
+            d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_sdiv{div}",
+                       ["+PLEN=25", f"+PAYLOAD=vectors/full_{rate}_len25_payload.hex",
+                        f"+SAMPLES=vectors/full_{rate}_len25_samples.hex"],
+                       rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp=\d+ sdiv={div} samples=\d+",
+                       search_libs=["work_base"])
+
+    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1) + 2 * 3 + 2 * 2
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:
