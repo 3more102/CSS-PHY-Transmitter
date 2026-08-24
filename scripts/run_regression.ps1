@@ -2,24 +2,34 @@
 # regression under ModelSim (Intel FPGA Starter Edition).
 #
 # Usage: powershell -File scripts\run_regression.ps1 [-Cases tag1,tag2]
+#        [-Vectors <dir>]   vector directory with manifest.txt + *.hex
+#                           (default: vectors\; use sim_edge after running
+#                            scripts\gen_edge_vectors.py for the edge set)
 [CmdletBinding()]
 param(
-    [string[]]$Cases = @()
+    [string[]]$Cases = @(),
+    [string]$Vectors = ""
 )
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot   # repo root
 $sim  = Join-Path $root "sim"
-$vec  = Join-Path $root "vectors"
+if ($Vectors -eq "") { $Vectors = Join-Path $root "vectors" }
+elseif (-not ([System.IO.Path]::IsPathRooted($Vectors))) { $Vectors = Join-Path $root $Vectors }
+$vec  = $Vectors
 $modelsim = "C:\intelFPGA\18.1\modelsim_ase\win32aloem"
 
 if (-not (Test-Path $modelsim)) {
     Write-Error "ModelSim not found at $modelsim"
 }
 
-Write-Host "=== [1/4] generating golden vectors ==="
-& python (Join-Path $root "scripts\gen_golden_vectors.py")
-if ($LASTEXITCODE -ne 0) { Write-Error "golden vector generation failed" }
+if ($Vectors -eq (Join-Path $root "vectors")) {
+    Write-Host "=== [1/4] generating golden vectors ==="
+    & python (Join-Path $root "scripts\gen_golden_vectors.py")
+    if ($LASTEXITCODE -ne 0) { Write-Error "golden vector generation failed" }
+} else {
+    Write-Host "=== [1/4] using pre-generated vectors in $vec ==="
+}
 
 Write-Host "=== [2/4] preparing sim workspace ==="
 New-Item -ItemType Directory -Force -Path $sim | Out-Null

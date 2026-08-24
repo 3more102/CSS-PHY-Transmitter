@@ -6,3 +6,6 @@ work/
 transcript
 *.wlf
 *.vcd
+
+# generated regression summaries
+reports/regression_report.txt
