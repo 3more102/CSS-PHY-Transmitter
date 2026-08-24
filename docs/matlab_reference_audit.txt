@@ -1,0 +1,267 @@
+﻿============================================================
+CSS PHY MATLAB REFERENCE AUDIT
+============================================================
+
+=== KEY PARAMETER DEFINITIONS ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:156: TxDACbitNumber = 6 ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:16: % samplingFreqMhz = sampling frequency in Mhz, normally multiple of 32
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:123: samplingFreqMhz=32;  % Sampling Frequency in MHz
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:28: chirpIndex=1;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:60: for numDataRate = 1 : numDataRatesToSimulate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:62: dataRate = dataRateArray(numDataRate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:64: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:25: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:60: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:82: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:133: if dataRate == 0   % 1 Mb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:236: if dataRate == 1
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:19: % dataRateArray = [ 0 1 ];  % 0 for  1 Mb/s  , 1  for 250 kb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:46: numDataRatesToSimulate = length(dataRateArray);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:50: numPacketErrors=zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:51: numSimulatedPackets=zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:52: numSyncPassedPackets=zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:53: sumFreqOffsetHz=zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:54: sumSNR_estimationErrordB_Squared = zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:55: sumFreqOffsetHzSquared=zeros(numDataRatesToSimulate,numSNRlevelsToSimulate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:60: for numDataRate = 1 : numDataRatesToSimulate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:62: dataRate = dataRateArray(numDataRate);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:64: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:74: numPreambleSamples=preambleLengthStd(dataRate+1)*Tchirp/4;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:13: dataRateArray = [ 0 1 ];
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:2: ChirpSpreadSpectrum_Tx ( incomingStream , dataRate, chirpSequence )
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:25: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:26: % dataRate ... 0 for  1 Mb/s  , 1  for 250 kb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:60: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:82: if dataRate == 0
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:133: if dataRate == 0   % 1 Mb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:236: if dataRate == 1
+
+=== FIXED POINT / QUANTIZATION ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:24: global codeWordLengthStd;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:29: global TxDACbitNumber;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:67: codeWordLength = codeWordLengthStd(1);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:71: codeWordLength = codeWordLengthStd(2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:83: % put chirp sequence samples in (TxDACbitNumber)signed bit integer.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:84: chirpSequence_Tx = floor ( chirpSequence * (2^(TxDACbitNumber -1)-1) ) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:89: re = fi(chirpSequenceReal_tofile,1,6,0);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:90: im = fi(chirpSequenceImag_tofile,1,6,0);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:105: % chirpSequence_Tx = chirpSequence_Tx / (2^(TxDACbitNumber -1)-1);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\decimal2binary.m:14: %        decimal(1:decimal_length) =  floor(decimal(1:decimal_length)/2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:18: global codeWordLengthStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:30: global TxDACbitNumber;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:41: % codeWordLength represent number of chip/symbol
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:82: codeWordLengthStd = [ 4 32 ] ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:90: StandCodeWord_1Mbs = hadamard ( codeWordLengthStd(1) ) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:102: StandCodeWord_250kbs = hadamard ( codeWordLengthStd(2) ) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:156: TxDACbitNumber = 6 ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\raisedCosineGen.m:17: nunONESsamples=1+floor(0.3*Tsub);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:20: global codeWordLengthStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:31: codeWordLength = codeWordLengthStd(1) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:42: codeWordLength = codeWordLengthStd(2) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:59: % codeWordLength represent number of chip/symbol
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:270: reshape(I_path_mapped_biOrthogonal,1,codeWordLength*numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:272: reshape(Q_path_mapped_biOrthogonal,1,codeWordLength*numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:301: numDQPSKinputs= binaryDataLengthBits /2 *codeWordLength / ...
+
+=== CHIRP GENERATION ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:22: global samplingFreqMhz; % Sampling Frequency in MHz
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:43: phaseRotationPerSample = 2*pi*frequencyOffsetkHz/samplingFreqMhz/1000;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:80: chirpSequence = chirpSequenceGenerator(chirpIndex, samplingFreqMhz );
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:9: % test Case 4 : SNR 10 payloadLength = 127  3840*4
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:16: % minimum 3840 Samples
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:17: numZerosBeforePacket = 3840*4;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:33: % odd-symbol indices (32 33 34 35 36 37 38 39 40 41 42 43 44 45 46
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:41: % 16 17 18 19, 36 37 38 39, 24 25 26 27 ,44 45 46 47)
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:50: % 19 36 37 38 39,24 25 26 27 44 45 46 47,32 33 34 35 20 21 22 23,
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:55: 16 17 18 19 36 37 38 39 24 25 26 27 44 45 46 47 ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:1: function [chirpSequence] = chirpSequenceGenerator(m, samplingFreqMhz )
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:16: % samplingFreqMhz = sampling frequency in Mhz, normally multiple of 32
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:29: % Tsub 1.1875 micro sec .... 38 Samples
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:31: % Tsub= 1.1875 * samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:71: raisedCosine  = raisedCosineGen(Tsub);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:89: %      exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:90: %      muMHz * zeta_k_m(k+1,m)/2/samplingFreqMhz * timeMinusT_n_k_m ) ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:91: %           .* timeMinusT_n_k_m ) .* raisedCosine ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:95: exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:96: muMHz * zeta_k_m(k+1,m)/2/samplingFreqMhz * timeMinusT_n_k_m(n) ) ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:97: .* timeMinusT_n_k_m(n) ) .* raisedCosine(n);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:105: * timeMinusT_n_k_m/samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:27: global samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:123: samplingFreqMhz=32;  % Sampling Frequency in MHz
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:136: Tchirp= 6 * samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:137: Tsub = 1.1875 * samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:138: Tau_m = [0.46875, 0.3125, 0.15625, 0]* samplingFreqMhz;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\raisedCosineGen.m:1: function [ raisedCosine ] =raisedCosineGen(Tsub )
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\raisedCosineGen.m:29: raisedCosine=[fliplr(tmp), tmp(2:Tsub/2)];
+
+=== DQPSK / QPSK ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m:67: % to Simulae the effect of processing delay added by
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:89: %      exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m:95: exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:40: % I input and the Q input of QPSK.as specified in Table 26d.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:55: % (I and Q) of the QPSK mapper. A SFD sequence starts with bit 0.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:2: chirpModulation( QPSKsymbols, chirpSequence )
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:8: % The stream of DQPSK symbols shall be modulated onto the stream of
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:11: % modulation shall be that each subchirp is multiplied with a DQPSK value
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:22: [x y]=size(QPSKsymbols);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:24: QPSKsymbols=transpose(QPSKsymbols);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:27: numQPSKsymbols=length(QPSKsymbols);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:30: chirpSymbols=zeros(1,numQPSKsymbols/4*Tchirp);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:36: for QPSKgroupCounter=0:numQPSKsymbols/4-1
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:40: groupIndex=(4*QPSKgroupCounter+1 : 4*QPSKgroupCounter+4);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:41: modulationSymbols=repmat(QPSKsymbols(groupIndex), Tsub ,1);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:43: evenOdd=mod(QPSKgroupCounter,2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m:45: % Modulate the 4 subchrip sequence with the 4 DQPSK symbols
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:8: % The stream of payload binary bits is modulated to DQPSK symbols then the
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:9: % DQPSK symbols shall be modulated onto the stream of
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:58: % I input and the Q input of QPSK.as specified in Table 26d.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:81: % (I and Q) of the QPSK mapper. A SFD sequence starts with bit 0.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:255: % 6.5a.2.5 Parallel-to-serial converter (P/S) and QPSK symbol mapping
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:275: % (I and Q) of the QPSK mapper.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:279: % QPSK symbol mapping
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:281: % QPSK_InputChips mapping;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:282: % Each pair of I and Q chips shall be mapped onto a QPSK symbol
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:284: global DQPSK_input;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:285: DQPSK_input= ((I_path +  Q_path) - j*(I_path -  Q_path))/2;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:289: % 6.5a.2.6 DQPSK coding
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:292: % The stream of QPSK symbols shall be differentially encoded by using a
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:293: % differential encoder with a QPSK symbol feedback memory of length 4.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:295: % of the differential encoder shall be set to exp(j*pi/4)
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:298: % (In other words, the phase summtion between QPSK symbol 1 and 5, 2 and
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:301: numDQPSKinputs= binaryDataLengthBits /2 *codeWordLength / ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:304: for i =1: 4 : numDQPSKinputs
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:306: DQPSK_output(i:i+3,1) =  DQPSK_input(i:i+3,1) .* feedback_memory ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:307: % QPSK_symbols Stored in feedback memory
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:308: feedback_memory = DQPSK_output(i:i+3);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:313: % DQPSK output must be normalized. In reality, only the phase is needed.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:319: % DQPSK_output = DQPSK_output/sqrt(2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:322: % 6.5a.2.7 DQPSK-to-DQCSK modulation
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:325: % The stream of DQPSK symbols shall be modulated onto the stream of
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:328: % modulation shall be that each subchirp is multiplied with a DQPSK value
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:333: chirpModulation( DQPSK_output , chirpSequence );
+
+=== INTERLEAVER / SYMBOL MAPPER ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:24: global codeWordLengthStd;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:67: codeWordLength = codeWordLengthStd(1);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m:71: codeWordLength = codeWordLengthStd(2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:2: function [path_interleaved] = ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:3: bitInterleaver ( biOrthogonalWords , numCodeWords )
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:6: % 6.5a.2.9 Bit interleaver
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:9: % The bit interleaver is applied only for the optional data rate of 250kb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:10: % The 32 chip bi-orthogonal codewords for the optional 250 kb/s data rate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:11: % are interleaved prior to the parallel to serial converter.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:14: % The interleaver permutes the chips across two consecutive codewords
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:20: path_to_interleaver = ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:21: reshape(transpose( biOrthogonalWords ),64, numCodeWords/2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:23: % The input-output relationship of this interleaver as follows:
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m:59: path_interleaved = path_to_interleaver(output_indices+1,:);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:17: global numBitsPerCodeWordStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:18: global codeWordLengthStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:19: global codeword_1Mbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:20: global codeword_250kbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:41: % codeWordLength represent number of chip/symbol
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:82: codeWordLengthStd = [ 4 32 ] ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:89: % codeword(c0, c1, c2, c3) for the 1 Mb/s data rate as in Table26a.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:90: StandCodeWord_1Mbs = hadamard ( codeWordLengthStd(1) ) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:91: codeword_1Mbs = [StandCodeWord_1Mbs;-StandCodeWord_1Mbs];
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:94: fid = fopen('codeword_1Mbs.txt', 'wt' );
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:95: fprintf(fid, '%d%d%d%d\n', transpose((codeword_1Mbs+1)/2));
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:100: % codeword (c0, c1, c2, ... , c31) for the optional 250 kb/s data rate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:102: StandCodeWord_250kbs = hadamard ( codeWordLengthStd(2) ) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:103: codeword_250kbs = [StandCodeWord_250kbs;-StandCodeWord_250kbs];
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:106: fid = fopen('codeword_250kbs.txt', 'wt' );
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:107: fprintf(fid, '%d%d%d%d\n', transpose((codeword_250kbs+1)/2));
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:118: %  a data symbol shall consist of 3 bits. i.e.,numBitsPerCodeWord=3.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:119: %  a data symbol shall consist of 6 bits. i.e.,numBitsPerCodeWord=6.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\globalSettings.m:120: numBitsPerCodeWordStd = [ 3 6 ];
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:18: global numBitsPerCodeWordStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:20: global codeWordLengthStd ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:21: global codeword_1Mbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:22: global codeword_250kbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:31: codeWordLength = codeWordLengthStd(1) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:32: % codeword(c0, c1, c2, c3) for the 1 Mb/s data rate as in Table26a.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:33: codeword = codeword_1Mbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:35: numBitsPerCodeWord = numBitsPerCodeWordStd(1);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:42: codeWordLength = codeWordLengthStd(2) ;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:43: % codeword (c0, c1, c2, ... , c31) for the optional 250 kb/s data rate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:45: codeword = codeword_250kbs;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:47: numBitsPerCodeWord = numBitsPerCodeWordStd(2);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:59: % codeWordLength represent number of chip/symbol
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:130: % Padding the incoming stream to make sure it fits into the Symbol Mapper
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:140: % The data stream going into the interleaver shall be padded with zeros
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:142: % bounds of the interleaver blocks.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:143: % The interleaver permutes the chips across two consecutive codewords
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:146: % 2(I,Q) * 2( consecutive codewords ) * 6 bit per dataSymbol = 24 bits.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:183: numCodeWords=binaryDataLengthBits/2/numBitsPerCodeWord;
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:185: % i.e.,numBitsPerCodeWord=3.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:187: % i.e.,numBitsPerCodeWord=6.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:188: I_path = reshape (I,numBitsPerCodeWord, numCodeWords)';
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:189: Q_path = reshape (Q,numBitsPerCodeWord, numCodeWords)';
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:202: I_path_dec = binary2decimal(I_path,numBitsPerCodeWord,numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:204: Q_path_dec = binary2decimal(Q_path,numBitsPerCodeWord,numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:209: % 6.5a.2.4 Data-symbol-to-bi-orthogonal-codeword mapping
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:219: %     I_path_mapped_biOrthogonal(i,:)= codeword(I_path_dec(i)+1,:);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:220: %     Q_path_mapped_biOrthogonal(i,:)= codeword(Q_path_dec(i)+1,:);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:225: I_path_mapped_biOrthogonal=(codeword(I_path_dec+1,:));
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:226: Q_path_mapped_biOrthogonal=(codeword(Q_path_dec+1,:));
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:230: % 6.5a.2.9 Bit interleaver
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:233: % The bit interleaver is applied only for the optional data rate of 250kb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:234: % The 32 chip bi-orthogonal codewords for the optional 250 kb/s data rate
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:235: % are interleaved prior to the parallel to serial converter.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:238: % The interleaver permutes the chips across two consecutive codewords
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:242: bitInterleaver (I_path_mapped_biOrthogonal , numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:244: bitInterleaver (Q_path_mapped_biOrthogonal , numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:255: % 6.5a.2.5 Parallel-to-serial converter (P/S) and QPSK symbol mapping
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:261: % Each bi-orthogonal codeword shall be converted to a serial chip sequence.
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:262: % Within each 4-chip codeword (c0, c1, c2, c3) for the 1 Mb/s data rate,
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:266: % Within each 32-chip codeword (c0, c1,c2, ... , c31) for the 250 kb/s
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:270: reshape(I_path_mapped_biOrthogonal,1,codeWordLength*numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:272: reshape(Q_path_mapped_biOrthogonal,1,codeWordLength*numCodeWords);
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:279: % QPSK symbol mapping
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:301: numDQPSKinputs= binaryDataLengthBits /2 *codeWordLength / ...
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m:302: numBitsPerCodeWord + preambleLength + SFDlength;
+
+=== REFERENCE FILE COUNTS ===
+chirpSequenceReal_tofile.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\chirpSequenceReal_tofile.txt
+LINES = 152
+FIRST = 000000
+LAST  = 000001
+
+chirpSequenceImag_tofile.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\chirpSequenceImag_tofile.txt
+LINES = 152
+FIRST = 000000
+LAST  = 000000
+
+codeword_1Mbs.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\codeword_1Mbs.txt
+LINES = 8
+FIRST = 1111
+LAST  = 0110
+
+codeword_250kbs.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\codeword_250kbs.txt
+LINES = 512
+FIRST = 1111
+LAST  = 1001
+
+preambleSFD.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\preambleSFD.txt
+LINES = 12
+FIRST = 1111
+LAST  = 1100
+
+payload.txt
+PATH  = C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\payload.txt
+LINES = 28
+FIRST = 00011001
+LAST  = 00000000
+
+=== ENTRY FILES ===
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\runMe.m
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\simulationParameters.m
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\ChirpSpreadSpectrum_Tx.m
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\transmitter\chirpModulation.m
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\chirpSequenceGenerator.m
+C:\Users\omar\CSS_PHY_Transmitter_RTL\matlab\original\CSS_PHY_Trasmitter-Floating-Fixed Point\common\bitInterleaver.m
