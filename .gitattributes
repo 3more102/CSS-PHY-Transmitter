@@ -1,0 +1,3 @@
+# All committed text uses LF so Linux CI executes scripts verbatim and
+# Windows checkouts cannot inject CR into shell scripts or source blobs.
+* text=auto eol=lf
