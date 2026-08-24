@@ -1,0 +1,139 @@
+function [chirpSequence] = chirpSequenceGenerator(m, samplingFreqMhz )
+% ----------------------------------------------------------------------- %
+%=========================================================================%
+% 6.5a.2.8 CSK generator
+%=========================================================================%
+% ----------------------------------------------------------------------- %
+% The CSK generator shall periodically generate one of the four defined 
+% subchirp sequences (chirp symbols) as specified in 6.5a.4.3.
+% ----------------------------------------------------------------------- %
+% This function generates the chirp sequence which consists of 4 chirp
+% subsequences, accroding to equation (1a) and figure 20c
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+% Inputs:
+% m = Is the index of the selected chirp sequence = 1, 2, 3 or 4
+% samplingFreqMhz = sampling frequency in Mhz, normally multiple of 32
+% ----------------------------------------------------------------------- %
+% Output:
+% chirpSequence: A 4 columns matrix with length "Tsub". each columns is one
+% of the chirp subsequences in figure 20c
+% ----------------------------------------------------------------------- %
+% Tsub: the length of the chirp subsequence is unit of samples. Although 
+% this is irrelvant in matlab, it is useful for implementation phase 
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+% Table 26g—Equation (1a) numerical parameters—timing parameters
+% timing parameters values Multiple of 1/32MHz
+% Tchirp 6 micro sec .... 192 Samples 
+% Tsub 1.1875 micro sec .... 38 Samples
+% ----------------------------------------------------------------------- %
+% Tsub= 1.1875 * samplingFreqMhz;
+global Tsub;
+% ----------------------------------------------------------------------- %
+% The constant muMHz defines the characteristics of the subchirp signal. 
+% A value of muMHz = 2*pi*7.3158 * 10e12[rad/sec^2] shall be used.
+% ----------------------------------------------------------------------- %
+muMHz=7.3158;
+% ----------------------------------------------------------------------- %
+% Table 26f—Equation (1a) numerical parameters subchirp directions,
+% m\k   1    2    3    4
+%  1   +1   +1   –1   –1
+%  2   +1   –1   +1   –1
+%  3   –1   –1   +1   +1
+%  4   –1   +1   –1   +1
+% ----------------------------------------------------------------------- %
+zeta_k_m=transpose([ 1,  1, -1, -1; ...
+                     1, -1,  1, -1; ...
+                    -1, -1,  1,  1; ...
+                    -1,  1, -1,  1 ]);
+% ----------------------------------------------------------------------- %
+% w(k,m) = 2*pi* f(k,m) are the center frequencies of the subchirp signals. 
+% This value depends on m and k=1,2,3,4 which defines the subchirp number
+% in the subchirp sequence
+% Table 26e—Equation (1a) 
+% numerical parameters subband center frequencies, f (k,m) (MHz)
+% m\k     1            2           3           4
+% 1    fc – 3.15    fc + 3.15   fc + 3.15   fc – 3.15
+% 2    fc + 3.15    fc – 3.15   fc – 3.15   fc + 3.15
+% 3    fc – 3.15    fc + 3.15   fc + 3.15   fc – 3.15
+% 4    fc + 3.15    fc – 3.15   fc – 3.15   fc + 3.15
+fMHz_k_m=transpose([-3.15, +3.15, +3.15, -3.15;
+                    +3.15, -3.15, -3.15, +3.15;
+                    -3.15, +3.15, +3.15, -3.15;
+                    +3.15, -3.15, -3.15, +3.15]);
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+% 6.5a.4.4 Raised cosine window for chirp pulse shaping
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+% Generate the raised cosine pulse shape
+raisedCosine  = raisedCosineGen(Tsub);
+% ----------------------------------------------------------------------- %
+% If we need to plot the instantanepous frequency as in figure 20c we set
+% the "plotingOption" to 1. 
+plottingOption= 1 ;
+instantaneousFreqPlot=zeros(1,4*Tsub);
+% ----------------------------------------------------------------------- %
+% generate one of the four defined  subchirp sequences (chirp symbols)
+% ----------------------------------------------------------------------- %
+for k=0:3
+% ----------------------------------------------------------------------- %
+    % The "time" argument in equation (1a) 
+% ----------------------------------------------------------------------- %
+    timeMinusT_n_k_m=[-Tsub/2:Tsub/2-1];  % in equation (1a)
+% ----------------------------------------------------------------------- %    
+    % Apply equation (1a) for the selected sequence "m"
+% ----------------------------------------------------------------------- %
+%   chirpSequence(1:Tsub,k+1)=  ... 
+%      exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+%      muMHz * zeta_k_m(k+1,m)/2/samplingFreqMhz * timeMinusT_n_k_m ) ... 
+%           .* timeMinusT_n_k_m ) .* raisedCosine ;
+% ----------------------------------------------------------------------- %                                    
+   for n = 1 : Tsub                             
+    chirpSequence(n,k+1)=  ... 
+     exp( j*2*pi/samplingFreqMhz *( fMHz_k_m(k+1,m) + ...
+     muMHz * zeta_k_m(k+1,m)/2/samplingFreqMhz * timeMinusT_n_k_m(n) ) ... 
+                              .* timeMinusT_n_k_m(n) ) .* raisedCosine(n);
+   end                             
+% ----------------------------------------------------------------------- %    
+    if plottingOption==1
+% ----------------------------------------------------------------------- %
+        % Calculate the instantaneous frequence for plotting only
+% ----------------------------------------------------------------------- %
+        chirpFreq = fMHz_k_m(k+1,m) + muMHz * zeta_k_m(k+1,m)  ...
+                    * timeMinusT_n_k_m/samplingFreqMhz;
+        instantaneousFreqPlot(1+k*Tsub:(k+1)*Tsub)=chirpFreq;
+    end
+end
+% ----------------------------------------------------------------------- %
+% For plotting the instaantaneous frequence
+% ----------------------------------------------------------------------- %
+if plottingOption==1
+    figure
+    plot(instantaneousFreqPlot, '- .');
+    grid
+    xlabel('samples');
+    ylabel('Frequency in Mhz');
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+%-***********************************************************************-%
+%-***********************************************************************-%
+end
+end
+
+
+
+%-***********************************************************************-%
+    figure
+    plot(chirpFreq, '- .');
+    grid
+    xlabel('samples');
+    ylabel('Frequency in Mhz');
+% ----------------------------------------------------------------------- %
+% ----------------------------------------------------------------------- %
+%-***********************************************************************-%
+
+
+
+

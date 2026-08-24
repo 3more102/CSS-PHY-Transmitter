@@ -1,0 +1,144 @@
+# Reading C:/Modeltech_main/tcl/vsim/pref.tcl 
+# //  ModelSim SE 6.4 Beta Apr  1 2008 
+# //
+# //  Copyright 1991-2008 Mentor Graphics Corporation
+# //              All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND 
+# //  PROPRIETARY INFORMATION WHICH IS THE PROPERTY
+# //  OF MENTOR GRAPHICS CORPORATION OR ITS LICENSORS
+# //  AND IS SUBJECT TO LICENSE TERMS.
+# //
+# do {E:/Zigbee/Code/MATLAB/CSS_TxRxFullV15.01_Fixed/compile_and_launch.tcl} 
+cd E:/Zigbee/Code/VHDL
+# reading modelsim.ini
+vcom *.vhd
+# Model Technology ModelSim SE vcom 6.4 Beta Compiler 2008.03 Apr  1 2008
+# -- Loading package standard
+# -- Loading package std_logic_1164
+# -- Compiling entity css_tx
+# -- Compiling architecture struct of css_tx
+# -- Loading entity demux_iq
+# -- Loading entity ser2par_1mbit
+# -- Loading package numeric_std
+# -- Loading entity counter_nbits
+# -- Loading package std_logic_arith
+# -- Loading package std_logic_unsigned
+# -- Loading package textio
+# -- Loading package std_logic_textio
+# -- Loading entity rom
+# -- Loading entity dual_port_ram
+# -- Loading entity qpsk_mapper
+# -- Loading entity ff_3delays
+# -- Loading entity dqpsk
+# -- Loading entity ff
+# -- Loading entity chirpss
+# -- Compiling entity dqpsk
+# -- Compiling architecture struct of dqpsk
+# -- Compiling entity demux_1_2
+# -- Compiling architecture demux of demux_1_2
+# -- Compiling entity qpsk_mapper
+# -- Compiling architecture mux of qpsk_mapper
+# -- Compiling entity chirpss
+# -- Compiling architecture behav of chirpss
+# -- Compiling entity counter_nbits
+# -- Compiling architecture behav of counter_nbits
+# -- Compiling entity demux_iq
+# -- Compiling architecture struct of demux_iq
+# -- Loading entity mux_8_2
+# -- Loading entity counter_nbits
+# -- Compiling entity demux_1_4
+# -- Compiling architecture demux of demux_1_4
+# -- Compiling entity dual_port_ram
+# -- Compiling architecture behav of dual_port_ram
+# -- Compiling entity ff
+# -- Compiling architecture behav of ff
+# -- Compiling entity ff_3delays
+# -- Compiling architecture behav of ff_3delays
+# -- Compiling entity mux_4_2
+# -- Compiling architecture mux of mux_4_2
+# -- Compiling entity mux_8_2
+# -- Compiling architecture mux of mux_8_2
+# -- Compiling entity rom
+# -- Compiling architecture function_arch of rom
+# -- Compiling entity ser2par_1mbit
+# -- Compiling architecture struct of ser2par_1mbit
+# -- Loading entity demux_1_4
+vsimmatlab -novopt css_tx
+# vsim -foreign {matlabclient {C:/Program Files/MATLAB/R2008b/toolbox/modelsim/windows32/liblfmhdlc_vs05.dll} } -novopt css_tx 
+# Loading std.standard
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_unsigned(body)
+# Loading std.textio(body)
+# Loading ieee.std_logic_textio(body)
+# Refreshing E:\Zigbee\Code\VHDL\work.css_tx(struct)
+# Loading work.css_tx(struct)
+# Refreshing E:\Zigbee\Code\VHDL\work.ff(behav)
+# Loading work.ff(behav)
+# Refreshing E:\Zigbee\Code\VHDL\work.demux_iq(struct)
+# Loading work.demux_iq(struct)
+# Refreshing E:\Zigbee\Code\VHDL\work.rom(function_arch)
+# Loading work.rom(function_arch)
+# Refreshing E:\Zigbee\Code\VHDL\work.counter_nbits(behav)
+# Loading work.counter_nbits(behav)
+# Refreshing E:\Zigbee\Code\VHDL\work.mux_8_2(mux)
+# Loading work.mux_8_2(mux)
+# Refreshing E:\Zigbee\Code\VHDL\work.ser2par_1mbit(struct)
+# Loading work.ser2par_1mbit(struct)
+# Refreshing E:\Zigbee\Code\VHDL\work.demux_1_4(demux)
+# Loading work.demux_1_4(demux)
+# Refreshing E:\Zigbee\Code\VHDL\work.dual_port_ram(behav)
+# Loading work.dual_port_ram(behav)
+# Refreshing E:\Zigbee\Code\VHDL\work.qpsk_mapper(mux)
+# Loading work.qpsk_mapper(mux)
+# Refreshing E:\Zigbee\Code\VHDL\work.dqpsk(struct)
+# Loading work.dqpsk(struct)
+# Refreshing E:\Zigbee\Code\VHDL\work.ff_3delays(behav)
+# Loading work.ff_3delays(behav)
+# Refreshing E:\Zigbee\Code\VHDL\work.chirpss(behav)
+# Loading work.chirpss(behav)
+# Loading C:/Program Files/MATLAB/R2008b/toolbox/modelsim/windows32/liblfmhdlc_vs05.dll
+matlabtb css_tx -mfunc css_tx.m -socket 1671
+vsim -novopt css_tx
+# vsim -novopt css_tx 
+# Loading std.standard
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_unsigned(body)
+# Loading std.textio(body)
+# Loading ieee.std_logic_textio(body)
+# Loading work.css_tx(struct)
+# Loading work.ff(behav)
+# Loading work.demux_iq(struct)
+# Loading work.rom(function_arch)
+# Loading work.counter_nbits(behav)
+# Loading work.mux_8_2(mux)
+# Loading work.ser2par_1mbit(struct)
+# Loading work.demux_1_4(demux)
+# Loading work.dual_port_ram(behav)
+# Loading work.qpsk_mapper(mux)
+# Loading work.dqpsk(struct)
+# Loading work.ff_3delays(behav)
+# Loading work.chirpss(behav)
+add wave sim:/css_tx/*
+add wave sim:/css_tx/css_unit/enable 
+add wave sim:/css_tx/css_unit/Tgap
+add wave sim:/css_tx/css_unit/Tx_done
+add wave sim:/css_tx/css_unit/counter
+force -freeze sim:/css_tx/clk 1 0, 0 {50 ns} -r 100
+force -freeze sim:/css_tx/reset 1 0
+force -freeze sim:/css_tx/start_tx 0 0
+run 900
+# ** Warning: NUMERIC_STD."<": metavalue detected, returning FALSE
+#    Time: 0 ns  Iteration: 0  Instance: /css_tx/css_unit
+# ** Warning: NUMERIC_STD."<": metavalue detected, returning FALSE
+#    Time: 0 ns  Iteration: 1  Instance: /css_tx/css_unit
+force -freeze sim:/css_tx/reset 0 0
+run 100
+force -freeze sim:/css_tx/start_tx 1 0
+
+run 786200
+quit -f
