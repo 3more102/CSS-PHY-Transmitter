@@ -73,10 +73,31 @@ module tb_css_phy_protocol;
       if(done_Tx) begin
         if(samples!=EXPECTED_SAMPLES)
           $fatal(1,"rate=%0d restart sample count expected=%0d got=%0d",RATE,EXPECTED_SAMPLES,samples);
-        $display("PASS tb_css_phy_protocol rate=%0d samples=%0d",RATE,samples);
-        $finish;
+        break;
       end
     end
+
+    // Held-start contract: a level start_Tx is ignored while a packet is
+    // active and re-arms the transmitter immediately after done_Tx, so
+    // holding it high produces identical consecutive packets.
+    samples=0;
+    @(negedge clk); start_Tx=1;
+    wait(dut.tx_active);
+    forever begin
+      @(posedge clk); #1;
+      if(dut.sample_valid_int) samples=samples+1;
+      if(done_Tx) begin
+        if(samples!=EXPECTED_SAMPLES)
+          $fatal(1,"rate=%0d held-start packet expected=%0d got=%0d",RATE,EXPECTED_SAMPLES,samples);
+        break;
+      end
+    end
+    @(negedge clk); start_Tx=0;
+    repeat(4) @(posedge clk); #1;
+    if(dut.tx_active || dut.csk_busy || dut.sample_valid_int)
+      $fatal(1,"rate=%0d not idle after dropping held start",RATE);
+    $display("PASS tb_css_phy_protocol rate=%0d samples=%0d",RATE,samples);
+    $finish;
   end
 
   initial begin #20000000; $fatal(1,"protocol timeout rate=%0d",RATE); end
