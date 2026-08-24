@@ -118,8 +118,11 @@ def main() -> int:
 
     if tools["verilator"]:
         stages.append(run_command("Verilator lint", ["bash", "scripts/run_lint.sh"], "verilator_lint.log"))
+    elif shutil.which("vlog") or shutil.which("vsim") or os.environ.get("MODELSIM_BIN"):
+        # Fallback: lint via ModelSim `vlog -sv -lint` with fatal diagnostics.
+        stages.append(run_command("Lint (ModelSim)", [sys.executable, "scripts/run_lint_msim.py"], "lint_msim_stage.log"))
     else:
-        stages.append(blocked("Verilator lint", "Verilator is not installed"))
+        stages.append(blocked("Verilator lint", "Verilator is not installed (no vlog fallback)"))
 
     fpga_part = os.environ.get("FPGA_PART", "").strip()
     if not tools["vivado"]:
