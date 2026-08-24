@@ -39,7 +39,7 @@ UNIT_TBS = [
     "tb_csk_modulator",
 ]
 RATE_TBS = ["tb_css_tx_controller", "tb_css_phy_tx_top", "tb_css_phy_protocol",
-            "tb_css_phy_tx_multi"]
+            "tb_css_phy_tx_multi", "tb_css_phy_tx_reset_sweep"]
 LENGTHS = [0, 1, 3, 25, 127]
 
 ERROR_RE = re.compile(r"^\*\* (Error|Failure|Fatal)", re.MULTILINE)
@@ -160,6 +160,13 @@ def main() -> int:
         ]
         d.simulate(vsim, lib, "tb_css_phy_tx_multi", f"multi_{rate}", multi_args,
                    r"PASS tb_css_phy_tx_multi rate=\d+ packets=3 lens=\d+,\d+,\d+")
+        # Mid-stream reset sweep: abort a packet at six stream depths
+        # (preamble..deep payload), require clean idle each time, then verify
+        # the restarted packet is sample-exact.
+        d.simulate(vsim, lib, "tb_css_phy_tx_reset_sweep", f"reset_sweep_{rate}",
+                   ["+PLEN=25", f"+PAYLOAD=vectors/full_{rate}_len25_payload.hex",
+                    f"+SAMPLES=vectors/full_{rate}_len25_samples.hex"],
+                   r"PASS tb_css_phy_tx_reset_sweep rate=\d+ resets=6 plen=25")
 
     # Chirp-index sweep: elaborations with CHIRP_INDEX=2..4 (1 is covered by
     # the canonical matrix). Each variant gets its own library holding only a
@@ -203,7 +210,7 @@ def main() -> int:
                        rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp=\d+ sdiv={div} samples=\d+",
                        search_libs=["work_base"])
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1) + 2 * 3 + 2 * 2
+    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 2) + 2 * 3 + 2 * 2
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:

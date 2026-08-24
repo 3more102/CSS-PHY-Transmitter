@@ -101,6 +101,11 @@ GitHub Actions has executed the Icarus/Verilator flow successfully. The CI evide
 - full-chain CHIRP_INDEX sweep PASS for chirps 2, 3 and 4 at both rates
   (sample-exact against the reference model; chirp 1 is covered by the
   canonical payload matrix);
+- SAMPLE_DIV sweep PASS (`2` and `5`, both rates): the divided-rate output
+  stream is value-identical to `SAMPLE_DIV=1` against the same golden vectors;
+- mid-stream reset sweep PASS: packets aborted at six stream depths
+  (preamble through deep payload) return to a clean idle and the restarted
+  packet remains sample-exact;
 - fixed-point MSE acceptance;
 - strict Verilator `-Wall` success with warnings treated as fatal;
 - no Verilator warning/error diagnostics in the preserved lint log.

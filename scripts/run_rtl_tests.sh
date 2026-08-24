@@ -37,6 +37,7 @@ for rate in 1m 250k; do
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_top -o "results/sim/top_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_top.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_protocol -o "results/sim/protocol_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_protocol.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_multi -o "results/sim/multi_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_multi.sv
+  iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_reset_sweep -o "results/sim/reset_sweep_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_reset_sweep.sv
   vvp "results/sim/protocol_${rate}.vvp"
   for len in 0 1 3 25 127; do
     vvp "results/sim/controller_${rate}.vvp" "+PLEN=$len" "+PAYLOAD=vectors/full_${rate}_len${len}_payload.hex" "+CHIPS=vectors/full_${rate}_len${len}_chips.txt"
@@ -51,6 +52,11 @@ for rate in 1m 250k; do
     "+P1SAMPLES=vectors/full_${rate}_len25_samples.hex" \
     "+P2SAMPLES=vectors/full_${rate}_len25alt_samples.hex" \
     "+P3SAMPLES=vectors/full_${rate}_len127alt_samples.hex"
+  # Mid-stream reset sweep: six abort depths, clean idle each time, then a
+  # sample-exact restarted packet.
+  vvp "results/sim/reset_sweep_${rate}.vvp" \
+    "+PLEN=25" "+PAYLOAD=vectors/full_${rate}_len25_payload.hex" \
+    "+SAMPLES=vectors/full_${rate}_len25_samples.hex"
 done
 
 # Chirp-index sweep: CHIRP_INDEX=2..4 end to end (1 is covered above). The
