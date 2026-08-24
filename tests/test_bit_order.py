@@ -61,5 +61,56 @@ class BitOrderTests(unittest.TestCase):
                     np.testing.assert_array_equal(got_q, exp_q)
 
 
+class DqpskTransitionCoverageTests(unittest.TestCase):
+    """Independent replay of the exhaustive DQPSK stimulus vector.
+
+    Mirrors the RTL rotating 4-tap delay line with explicit 3-bit wrapping
+    arithmetic (the supplied fixed-point MATLAB removes normalization and
+    seeds every lane with 1+j). Proves that vectors/dqpsk_transitions.txt
+    visits every reachable differential product: initial-seed x4 plus
+    steady-state feedback value x input x16; the 1+j seed coincides with one
+    steady state, so the distinct value-space union is 16 pairs."""
+
+    VEC = ROOT / "vectors" / "dqpsk_transitions.txt"
+
+    def _wrap3(self, v):
+        v &= 0b111
+        return v - 8 if v > 3 else v
+
+    def test_transition_vector_is_exhaustive_and_self_consistent(self):
+        rows = []
+        lines = self.VEC.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(lines[0], "IDX I Q OUT_REAL OUT_IMAG")
+        declared = int(lines[1])
+        for line in lines[2:]:
+            if line.strip():
+                idx, vi, vq, orr, oii = (int(x) for x in line.split())
+                rows.append((idx, vi, vq, orr, oii))
+        self.assertEqual(declared, len(rows), "row count header must match payload")
+
+        fb = [(1, 1)] * 4
+        phase = 0
+        visited = set()
+        for row in rows:
+            idx, vi, vq, out_r, out_i = row
+            # +-1 chip pair -> axis-unit symbol (qpsk_map in exact integers).
+            sym_r, sym_i = (vi + vq) // 2, (vq - vi) // 2
+            self.assertIn((sym_r, sym_i), {(1, 0), (0, 1), (0, -1), (-1, 0)}, f"row {idx}")
+            fr, fi = fb[phase]
+            prod_r = self._wrap3(sym_r * fr - sym_i * fi)
+            prod_i = self._wrap3(sym_r * fi + sym_i * fr)
+            self.assertEqual((out_r, out_i), (prod_r, prod_i), f"row {idx}")
+            visited.add(((fr, fi), (sym_r, sym_i)))
+            fb[phase] = (prod_r, prod_i)
+            phase = (phase + 1) % 4
+
+        qpsk = {(1, 0), (0, 1), (0, -1), (-1, 0)}
+        steady_states = {(1, 1), (-1, 1), (-1, -1), (1, -1)}
+        expected = {((1, 1), s) for s in qpsk} | {(f, s) for f in steady_states for s in qpsk}
+        missing = expected - visited
+        self.assertFalse(missing, f"transition coverage incomplete: missing {sorted(missing)}")
+        self.assertEqual(len(visited), 16)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
