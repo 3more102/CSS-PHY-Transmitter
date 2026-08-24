@@ -4,6 +4,10 @@
 This parser never invents missing metrics.  A field is emitted only when the
 corresponding report contains a recognized value.  Timing is marked PASS only
 when a clock is present and both WNS/TNS are non-negative.
+
+Exit codes: 0 = measured PASS, 1 = measured FAIL or unconstrained paths, and
+2 = required reports absent/unrecognized.  Absence of evidence is never
+treated as success.
 """
 from __future__ import annotations
 
@@ -11,6 +15,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import sys
 from typing import Any
 
 FLOAT_RE = r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?"
@@ -69,7 +74,7 @@ def _table_metric(text: str, names: tuple[str, ...]) -> dict[str, float | int] |
             if re.fullmatch(FLOAT_RE, clean):
                 numeric.append(float(clean))
         if not numeric:
-            return None
+            continue
         result: dict[str, float | int] = {"used": int(numeric[0]) if numeric[0].is_integer() else numeric[0]}
         if len(numeric) >= 3:
             result["available"] = int(numeric[-2]) if numeric[-2].is_integer() else numeric[-2]
@@ -128,6 +133,13 @@ def main() -> int:
     args.output.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     print(args.output)
     timing_status = data.get("timing", {}).get("timing_status")
+    if timing_status is None or timing_status == "NOT_MEASURED":
+        print(
+            "ERROR: no recognized timing evidence under "
+            f"{args.report_dir}; refusing to report success without measurement.",
+            file=sys.stderr,
+        )
+        return 2
     return 1 if timing_status in {"FAIL", "INVALID_UNCONSTRAINED"} else 0
 
 

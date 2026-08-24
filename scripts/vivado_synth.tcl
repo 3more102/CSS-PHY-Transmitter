@@ -59,4 +59,23 @@ foreach c [get_clocks] {
 close $fp
 
 write_checkpoint -force results/vivado/css_phy_tx_post_synth.dcp
+
+# Provenance manifest so every report in reports/synthesis can be attributed
+# to the exact device and configuration that produced it.
+set clk_port "clk"
+if {[info exists ::env(CLOCK_PORT)] && $::env(CLOCK_PORT) ne ""} { set clk_port $::env(CLOCK_PORT) }
+set clk_ns 31.250
+if {[info exists ::env(CLOCK_PERIOD_NS)] && $::env(CLOCK_PERIOD_NS) ne ""} { set clk_ns $::env(CLOCK_PERIOD_NS) }
+set mf [open reports/synthesis/synth_manifest.txt w]
+puts $mf "part=$part"
+puts $mf "top=$top"
+puts $mf "DATA_RATE=$rate"
+puts $mf "CHIRP_INDEX=$chirp"
+puts $mf "SAMPLE_DIV=$sdiv"
+puts $mf "clock_port=$clk_port"
+puts $mf "clock_period_ns=$clk_ns"
+puts $mf "vivado_version=[versionstring]"
+puts $mf "generated_epoch=[clock seconds]"
+close $mf
+
 puts "SYNTHESIS COMPLETE: part=$part top=$top DATA_RATE=$rate CHIRP_INDEX=$chirp SAMPLE_DIV=$sdiv"

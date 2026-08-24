@@ -16,6 +16,18 @@ file mkdir reports/implementation
 file mkdir results/vivado
 open_checkpoint $dcp
 
+# The checkpoint carries the part it was synthesized for.  Refuse to produce
+# implementation evidence if the requested FPGA_PART does not match it, so a
+# report can never be attributed to the wrong device.
+set ckpt_part ""
+if {![catch {set ckpt_part [get_property PART [current_design]]}]} {
+  if {$ckpt_part ne "" && ![string equal -nocase $ckpt_part $::env(FPGA_PART)]} {
+    error "FPGA_PART '$::env(FPGA_PART)' does not match checkpoint part '$ckpt_part'; re-run scripts/vivado_synth.tcl with the same part."
+  }
+} else {
+  puts "WARNING: could not read PART from checkpoint; cross-check skipped."
+}
+
 if {[llength [get_clocks -quiet sys_clk]] != 1} {
   error "sys_clk constraint is missing in synthesis checkpoint; timing evidence would be invalid"
 }
@@ -42,4 +54,12 @@ foreach c [get_clocks] {
 close $fp
 
 write_checkpoint -force results/vivado/css_phy_tx_post_route.dcp
+
+set mf [open reports/implementation/impl_manifest.txt w]
+puts $mf "part_requested=$::env(FPGA_PART)"
+if {$ckpt_part ne ""} { puts $mf "part_from_checkpoint=$ckpt_part" }
+puts $mf "vivado_version=[versionstring]"
+puts $mf "generated_epoch=[clock seconds]"
+close $mf
+
 puts "IMPLEMENTATION COMPLETE. Bitstream intentionally not generated: board pin/IO constraints were not supplied."
