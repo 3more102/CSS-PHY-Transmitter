@@ -31,7 +31,7 @@ REQUIRED_STAGES = (
     "RTL simulation regression",
     "Verilator lint",
 )
-MIN_PYTHON_TESTS = 63
+MIN_PYTHON_TESTS = 64
 REQUIRED_PAYLOADS = (0, 1, 3, 25, 127)
 REQUIRED_UNIT_MARKERS = (
     "PASS tb_payload_ram",

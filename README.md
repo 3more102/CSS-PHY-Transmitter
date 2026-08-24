@@ -87,7 +87,7 @@ The committed verification driver distinguishes `PASS`, `FAIL`, `SKIP`, and `BLO
 
 ### Established source/reference evidence
 
-The tool-independent regression executes **46 Python tests** and establishes:
+The tool-independent regression executes **64 Python tests** and establishes:
 
 - exact supplied 1 Mbps/250 kbps codeword-table agreement;
 - exact supplied 152-real + 152-imag m=1 chirp-vector agreement;
@@ -112,6 +112,9 @@ GitHub Actions has executed the Icarus/Verilator flow successfully. The CI evide
   canonical payload matrix);
 - SAMPLE_DIV sweep PASS (`2` and `5`, both rates): the divided-rate output
   stream is value-identical to `SAMPLE_DIV=1` against the same golden vectors;
+- deterministic multi-packet stress PASS for both rates (24 packets per rate,
+  seed `0xC5C5C5A5`, length corners 0/1/63/64, zero-gap back-to-back starts,
+  varied idle gaps; sample-exact against independently generated references);
 - mid-stream reset sweep PASS: packets aborted at six stream depths
   (preamble through deep payload) return to a clean idle and the restarted
   packet remains sample-exact;

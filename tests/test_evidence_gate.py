@@ -23,7 +23,7 @@ gate = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gate)
 
 # Suite size guarded by the gate; keep in sync with tests/ discovery count.
-MIN_PYTHON_TESTS = 63
+MIN_PYTHON_TESTS = 64
 
 
 def build_rtl_log() -> str:
