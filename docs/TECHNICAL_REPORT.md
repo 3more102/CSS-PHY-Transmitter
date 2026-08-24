@@ -89,13 +89,17 @@ The project contains two complementary layers:
 1. Python source/reference/architecture regression, including exact source-vector comparisons, full-chain integer reconstruction, bit-order tests, randomized deterministic tests and EDA-report parser tests.
 2. Self-checking SystemVerilog unit/integration testbenches executed by Icarus Verilog.
 
-The tool-independent suite executes **46 Python tests**. GitHub Actions now also installs Icarus Verilog and Verilator and has executed the open-source HDL flow successfully. The CI evidence gate requires all RTL unit-test PASS markers, both protocol tests, every controller/top-level case in the required rate/payload matrix, the MSE acceptance result, and a strict warning-fatal Verilator `-Wall` pass. A clean lint run produces no Verilator diagnostics.
+The tool-independent suite executes **46 Python tests**. GitHub Actions now also installs Icarus Verilog and Verilator and has executed the open-source HDL flow successfully. The CI evidence gate requires all RTL unit-test PASS markers, both protocol tests, every controller/top-level case in the required rate/payload matrix, back-to-back multi-packet evidence, mid-stream reset sweep evidence, full-chain CHIRP_INDEX 2/3/4 and SAMPLE_DIV 2/5 sweep evidence, the MSE acceptance result, and a strict warning-fatal Verilator `-Wall` pass. A clean lint run produces no Verilator diagnostics.
 
 Required integration matrix:
 
 ```text
 1 Mbps:   0, 1, 3, 25, 127 bytes
 250 kbps: 0, 1, 3, 25, 127 bytes
+back-to-back packets: 25 -> 25 (distinct contents) -> 127 bytes, both rates
+reset sweep: 6 abort depths + sample-exact restart, both rates
+chirp sweep: CHIRP_INDEX 2, 3, 4, both rates (chirp 1 in canonical matrix)
+SAMPLE_DIV sweep: dividers 2 and 5, value-identical streams, both rates
 ```
 
 Each top-level test compares every emitted real/imaginary sample with deterministic golden data. Missing Icarus/Verilator tools are not accepted as CI PASS; the evidence gate rejects BLOCKED or incomplete HDL evidence.
