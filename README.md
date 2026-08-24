@@ -98,6 +98,9 @@ GitHub Actions has executed the Icarus/Verilator flow successfully. The CI evide
 - back-to-back multi-packet PASS for both rates (three sequential packets,
   including equal-length packets with distinct payload contents, verifying
   packet-to-packet state cleanup);
+- full-chain CHIRP_INDEX sweep PASS for chirps 2, 3 and 4 at both rates
+  (sample-exact against the reference model; chirp 1 is covered by the
+  canonical payload matrix);
 - fixed-point MSE acceptance;
 - strict Verilator `-Wall` success with warnings treated as fatal;
 - no Verilator warning/error diagnostics in the preserved lint log.

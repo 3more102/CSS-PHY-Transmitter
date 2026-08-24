@@ -53,4 +53,18 @@ for rate in 1m 250k; do
     "+P3SAMPLES=vectors/full_${rate}_len127alt_samples.hex"
 done
 
+# Chirp-index sweep: CHIRP_INDEX=2..4 end to end (1 is covered above). The
+# payload and length are fixed; only the chirp elaboration changes.
+for m in 2 3 4; do
+  for rate in 1m 250k; do
+    defs=(-DCHIRP_M${m})
+    [[ $rate == 250k ]] && defs+=(-DRATE250)
+    echo "== top ${rate} chirp${m} =="
+    iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_top -o "results/sim/top_${rate}_chirpm${m}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_top.sv
+    vvp "results/sim/top_${rate}_chirpm${m}.vvp" \
+      "+PLEN=25" "+PAYLOAD=vectors/chirp_sweep_payload.hex" \
+      "+SAMPLES=vectors/full_${rate}_len25_chirpm${m}_samples.hex"
+  done
+done
+
 echo "PASS: complete RTL regression"

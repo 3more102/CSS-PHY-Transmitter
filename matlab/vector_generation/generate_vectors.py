@@ -104,4 +104,19 @@ for rate, rate_name in [(RATE_1M, "1m"), (RATE_250K, "250k")]:
                 i = int(round(float(v.imag))) & 0xFF
                 f.write(f"{r:02x} {i:02x}\n")
 
+# Chirp-index sweep vectors: the canonical matrix covers CHIRP_INDEX=1; these
+# exercise the full chain for chirps 2..4 (ROM selection + per-chirp gaps).
+payload25 = deterministic_payload(25)
+(VECTORS / "chirp_sweep_payload.hex").write_text(
+    "\n".join(f"{b:02x}" for b in payload25) + "\n", encoding="utf-8")
+for rate, rate_name in [(RATE_1M, "1m"), (RATE_250K, "250k")]:
+    for m in (2, 3, 4):
+        result = transmit(payload25, rate, chirp_index=m)
+        base = f"full_{rate_name}_len25_chirpm{m}"
+        with (VECTORS / f"{base}_samples.hex").open("w", encoding="utf-8") as f:
+            for v in result.samples:
+                r = int(round(float(v.real))) & 0xFF
+                i = int(round(float(v.imag))) & 0xFF
+                f.write(f"{r:02x} {i:02x}\n")
+
 print(f"Generated vectors and ROMs under {ROOT}")

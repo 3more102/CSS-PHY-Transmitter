@@ -98,10 +98,13 @@ class Driver:
         self.check(f"compile {library} {defines or 'base'}", None, rc, out)
 
     def simulate(self, vsim: str, library: str, top: str, name: str,
-                 plusargs: list[str], marker: str) -> None:
+                 plusargs: list[str], marker: str,
+                 search_libs: list[str] | None = None) -> None:
         do = "onerror {quit -f}; run -all; quit -f"
-        cmd = [vsim, "-c", "-quiet", "-work", str(SIM_DIR / library), "-voptargs=+acc", top,
-               "-do", do] + plusargs
+        cmd = [vsim, "-c", "-quiet", "-work", str(SIM_DIR / library), "-voptargs=+acc", top]
+        for extra in search_libs or []:
+            cmd += ["-L", str(SIM_DIR / extra)]
+        cmd += ["-do", do] + plusargs
         rc, out = run(cmd, f"{name}.log")
         self.check(name, marker, rc, out)
 
@@ -144,7 +147,7 @@ def main() -> int:
                        rf"PASS tb_css_tx_controller rate=\d+ plen={length} chips=\d+")
             d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_len{length}",
                        common + [f"+SAMPLES=vectors/full_{rate}_len{length}_samples.hex"],
-                       rf"PASS tb_css_phy_tx_top rate=\d+ plen={length} samples=\d+")
+                       rf"PASS tb_css_phy_tx_top rate=\d+ plen={length} chirp=\d+ samples=\d+")
         # Back-to-back packets: equal length + distinct contents between
         # packets 1 and 2 detects cross-packet state leakage.
         multi_args = [
@@ -158,7 +161,28 @@ def main() -> int:
         d.simulate(vsim, lib, "tb_css_phy_tx_multi", f"multi_{rate}", multi_args,
                    r"PASS tb_css_phy_tx_multi rate=\d+ packets=3 lens=\d+,\d+,\d+")
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1)
+    # Chirp-index sweep: elaborations with CHIRP_INDEX=2..4 (1 is covered by
+    # the canonical matrix). Each variant gets its own library holding only a
+    # chirp-defined top testbench; the RTL resolves from work_base via -L.
+    for rate in ("1m", "250k"):
+        rate_defs = ["RATE250"] if rate == "250k" else []
+        for m in (2, 3, 4):
+            lib = f"work_{rate}_chirpm{m}"
+            libpath = SIM_DIR / lib
+            if libpath.exists():
+                shutil.rmtree(libpath)
+            rc, _ = run([vlib_tool, str(libpath)], f"vlib_{lib}.log")
+            if rc != 0:
+                print(f"FAIL vlib {lib}", file=sys.stderr)
+                return 2
+            d.compile(vlog, lib, [f"tb/tb_css_phy_tx_top.sv"], rate_defs + [f"CHIRP_M{m}"])
+            d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_chirpm{m}",
+                       ["+PLEN=25", "+PAYLOAD=vectors/chirp_sweep_payload.hex",
+                        f"+SAMPLES=vectors/full_{rate}_len25_chirpm{m}_samples.hex"],
+                       rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp={m} samples=\d+",
+                       search_libs=["work_base"])
+
+    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1) + 2 * 3
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:

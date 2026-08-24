@@ -5,6 +5,15 @@ module tb_css_phy_tx_top;
 `else
   localparam integer RATE=0;
 `endif
+`ifdef CHIRP_M2
+  localparam integer CHIRP=2;
+`elsif CHIRP_M3
+  localparam integer CHIRP=3;
+`elsif CHIRP_M4
+  localparam integer CHIRP=4;
+`else
+  localparam integer CHIRP=1;
+`endif
   logic clk=0,reset=0,start_Tx=0,payload_wr_en=0;
   logic [7:0] payloadLength;
   logic [6:0] payload_addr=0;
@@ -17,7 +26,7 @@ module tb_css_phy_tx_top;
   reg [1023:0] payload_path,samples_path;
   always #5 clk=~clk;
 
-  css_phy_tx_top #(.DATA_RATE(RATE),.CHIRP_INDEX(1)) dut(
+  css_phy_tx_top #(.DATA_RATE(RATE),.CHIRP_INDEX(CHIRP)) dut(
     .clk(clk),.reset(reset),.start_Tx(start_Tx),.payloadLength(payloadLength),
     .payload_wr_en(payload_wr_en),.payload_addr(payload_addr),.payload_din(payload_din),
     .done_Tx(done_Tx),.Tx_real(Tx_real),.Tx_imag(Tx_imag));
@@ -55,7 +64,7 @@ module tb_css_phy_tx_top;
       end
       if(done_Tx) begin
         rc=$fscanf(sfd,"%h %h\n",exp_r,exp_i); if(rc==2)$fatal(1,"done_Tx asserted before vector EOF");
-        $fclose(sfd); $display("PASS tb_css_phy_tx_top rate=%0d plen=%0d samples=%0d",RATE,plen,count); $finish;
+        $fclose(sfd); $display("PASS tb_css_phy_tx_top rate=%0d plen=%0d chirp=%0d samples=%0d",RATE,plen,CHIRP,count); $finish;
       end
     end
   end
