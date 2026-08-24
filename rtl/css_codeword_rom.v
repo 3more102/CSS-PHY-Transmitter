@@ -12,6 +12,20 @@ module css_codeword_rom (
     reg [3:0]  m4  [0:7];
     reg [31:0] m32 [0:511];
 
+    // synthesis translate_off
+    // Missing-file detector shadow word (sim-only): m32 itself is
+    // pre-zero-filled (entries 64..511 are unreachable and legitimately
+    // stay 0), so an absent cw32.hex leaves no X residue there and the
+    // old guard could never fire.  This shadow starts fully X.
+    reg [31:0] rom_present [0:0];
+    initial begin
+        rom_present[0] = 32'hxxxxxxxx;
+        $readmemh("cw32.hex", rom_present);
+        if (^rom_present[0] === 1'bx)
+            $display("FATAL: cw32.hex missing/unreadable - codeword ROM unloaded");
+    end
+    // synthesis translate_on
+
     integer i;
     initial begin
         // hadamard(4) followed by its negation, identical to codeword_1Mbs.txt.
@@ -22,10 +36,6 @@ module css_codeword_rom (
         for (i = 0; i < 512; i = i + 1)
             m32[i] = 32'h0;
         $readmemh("cw32.hex", m32);
-        // synthesis translate_off
-        if (^m32[0] === 1'bx)
-            $display("FATAL: cw32.hex missing/unreadable - codeword ROM unloaded");
-        // synthesis translate_on
         // cw32.hex stores c0 at the MSB (text order); re-map so c0 = bit 0
         for (i = 0; i < 512; i = i + 1) begin : rev
             integer b;
