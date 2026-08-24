@@ -94,6 +94,13 @@ class Driver:
             self.failures.append(f"{name}: {'; '.join(problems)}")
             print(f"FAIL {name} ({'; '.join(problems)})", flush=True)
         else:
+            # Echo the simulation's own PASS marker lines into the driver
+            # stdout: scripts/require_ci_evidence.py validates these exact
+            # markers in the captured regression log, mirroring the Icarus
+            # flow where testbenches print directly to stdout.
+            for line in out.splitlines():
+                if line.startswith("PASS"):
+                    print(line, flush=True)
             print(f"[ok] {name}", flush=True)
 
     def compile(self, vlog: str, library: str, files: list[str], defines: list[str]) -> None:

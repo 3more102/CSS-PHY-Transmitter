@@ -23,7 +23,7 @@ gate = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gate)
 
 # Suite size guarded by the gate; keep in sync with tests/ discovery count.
-MIN_PYTHON_TESTS = 64
+MIN_PYTHON_TESTS = 69
 
 
 def build_rtl_log() -> str:
@@ -191,6 +191,68 @@ class EvidenceGateTests(unittest.TestCase):
                 del stage["measured_floor_mse_bits6"]
         errors = gate.validate_summary(summary)
         self.assertTrue(any("MSE evidence is missing or malformed" in e for e in errors))
+
+
+class ModelSimEvidenceTests(unittest.TestCase):
+    """The Windows/ModelSim fallback records equivalent logical stages under
+    backend-specific names and log filenames; the gate must accept that
+    evidence bundle exactly as it accepts the Icarus/Verilator one."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _write(self, name: str, text: str) -> Path:
+        path = Path(self.tmp.name) / name
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def build_summary_msim(self) -> dict:
+        summary = build_summary()
+        for stage in summary["stages"]:
+            if stage["name"] == "RTL simulation regression":
+                stage["name"] = gate.RTL_STAGE_MSIM
+            elif stage["name"] == "Verilator lint":
+                stage["name"] = gate.LINT_STAGE_MSIM
+        return summary
+
+    def test_summary_accepts_msim_stage_names(self):
+        self.assertEqual(gate.validate_summary(self.build_summary_msim()), [])
+
+    def test_summary_still_requires_the_logical_stages(self):
+        summary = self.build_summary_msim()
+        for stage in summary["stages"]:
+            if stage["name"] in (gate.RTL_STAGE_MSIM, gate.LINT_STAGE_MSIM):
+                stage["status"] = "BLOCKED"
+        errors = gate.validate_summary(summary)
+        self.assertEqual(len([e for e in errors if "did not PASS" in e]), 2)
+
+    def test_log_paths_follow_executing_backend(self):
+        rtl_log, lint_log = gate.evidence_log_paths(self.build_summary_msim())
+        self.assertEqual(rtl_log.name, "rtl_regression_msim.log")
+        self.assertEqual(lint_log.name, "lint_msim_stage.log")
+        rtl_log, lint_log = gate.evidence_log_paths(build_summary())
+        self.assertEqual(rtl_log.name, "rtl_regression.log")
+        self.assertEqual(lint_log.name, "verilator_lint.log")
+
+    def test_full_msim_bundle_passes_gate(self):
+        rtl = self._write("rtl_regression_msim.log", build_rtl_log())
+        lint = self._write(
+            "lint_msim_stage.log",
+            "PASS lint (ModelSim): vlog -sv -lint clean on 15 RTL files\n")
+        errors = gate.validate_logs(rtl_log=rtl, lint_log=lint)
+        self.assertEqual(errors, [])
+
+    def test_msim_lint_warning_rejected(self):
+        rtl = self._write("rtl_regression_msim.log", build_rtl_log())
+        lint = self._write(
+            "lint_msim_stage.log",
+            "** Warning: width mismatch\n"
+            "PASS lint (ModelSim): vlog -sv -lint clean on 15 RTL files\n")
+        errors = gate.validate_logs(rtl_log=rtl, lint_log=lint)
+        self.assertTrue(any("lint log contains simulator warning" in e for e in errors))
 
 
 if __name__ == "__main__":

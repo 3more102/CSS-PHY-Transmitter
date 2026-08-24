@@ -19,6 +19,18 @@ SUMMARY = REPORTS / "verification_summary.json"
 RTL_LOG = REPORTS / "rtl_regression.log"
 LINT_LOG = REPORTS / "verilator_lint.log"
 
+# run_verification.py records whichever backend actually executed a logical
+# stage (Icarus/Verilator primary, ModelSim fallback). The gate must accept
+# equivalent evidence from either backend instead of hard-coding one toolchain.
+RTL_STAGE_MSIM = "RTL simulation regression (ModelSim)"
+LINT_STAGE_MSIM = "Lint (ModelSim)"
+STAGE_ALIASES = {
+    "RTL simulation regression": (RTL_STAGE_MSIM,),
+    "Verilator lint": (LINT_STAGE_MSIM,),
+}
+RTL_LOG_MSIM = REPORTS / "rtl_regression_msim.log"
+LINT_LOG_MSIM = REPORTS / "lint_msim_stage.log"
+
 REQUIRED_STAGES = (
     "Golden vector / ROM regeneration",
     "Fixed-point MSE calculation",
@@ -31,7 +43,7 @@ REQUIRED_STAGES = (
     "RTL simulation regression",
     "Verilator lint",
 )
-MIN_PYTHON_TESTS = 64
+MIN_PYTHON_TESTS = 69
 REQUIRED_PAYLOADS = (0, 1, 3, 25, 127)
 REQUIRED_UNIT_MARKERS = (
     "PASS tb_payload_ram",
@@ -49,6 +61,16 @@ REQUIRED_UNIT_MARKERS = (
 )
 
 
+def find_stage(stages: dict[str, dict[str, Any]], name: str) -> dict[str, Any] | None:
+    stage = stages.get(name)
+    if stage is not None:
+        return stage
+    for alias in STAGE_ALIASES.get(name, ()):
+        if alias in stages:
+            return stages[alias]
+    return None
+
+
 def validate_summary(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     stages = {stage.get("name"): stage for stage in payload.get("stages", [])}
@@ -59,7 +81,7 @@ def validate_summary(payload: dict[str, Any]) -> list[str]:
         )
 
     for name in REQUIRED_STAGES:
-        stage = stages.get(name)
+        stage = find_stage(stages, name)
         if stage is None:
             errors.append(f"required stage missing: {name}")
             continue
@@ -88,8 +110,14 @@ def validate_logs(rtl_log: Path = RTL_LOG, lint_log: Path = LINT_LOG) -> list[st
         errors.append("missing Verilator lint log")
     else:
         lint_text = lint_log.read_text(encoding="utf-8", errors="replace")
+        # Both diagnostic formats are scanned unconditionally: Verilator
+        # ("%Warning-...") and ModelSim ("** Warning ..."). A log produced by
+        # one backend cannot contain the other's diagnostics, so this stays
+        # precise while accepting evidence from either toolchain.
         if "%Warning-" in lint_text or "%Error-" in lint_text:
             errors.append("Verilator lint log contains warning/error diagnostics")
+        if re.search(r"^\*\* (Warning|Error|Fatal)", lint_text, re.MULTILINE):
+            errors.append("lint log contains simulator warning/error diagnostics")
 
     if not rtl_log.is_file():
         errors.append("missing RTL regression log")
@@ -142,6 +170,14 @@ def validate_logs(rtl_log: Path = RTL_LOG, lint_log: Path = LINT_LOG) -> list[st
     return errors
 
 
+def evidence_log_paths(payload: dict[str, Any]) -> tuple[Path, Path]:
+    """Pick the regression/lint logs matching the backend that actually ran."""
+    names = {stage.get("name") for stage in payload.get("stages", [])}
+    rtl_log = RTL_LOG_MSIM if RTL_STAGE_MSIM in names else RTL_LOG
+    lint_log = LINT_LOG_MSIM if LINT_STAGE_MSIM in names else LINT_LOG
+    return rtl_log, lint_log
+
+
 def main() -> int:
     if not SUMMARY.is_file():
         print(f"FAIL: missing verification summary: {SUMMARY.relative_to(ROOT)}")
@@ -153,7 +189,8 @@ def main() -> int:
         print(f"FAIL: cannot read verification summary: {exc}")
         return 1
 
-    errors = validate_summary(payload) + validate_logs()
+    rtl_log, lint_log = evidence_log_paths(payload)
+    errors = validate_summary(payload) + validate_logs(rtl_log=rtl_log, lint_log=lint_log)
     if errors:
         print("CI evidence gate: FAIL")
         for error in errors:
