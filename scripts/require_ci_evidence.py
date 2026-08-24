@@ -9,6 +9,7 @@ must also leave complete, internally consistent evidence logs.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +31,7 @@ REQUIRED_STAGES = (
     "RTL simulation regression",
     "Verilator lint",
 )
-MIN_PYTHON_TESTS = 46
+MIN_PYTHON_TESTS = 62
 REQUIRED_PAYLOADS = (0, 1, 3, 25, 127)
 REQUIRED_UNIT_MARKERS = (
     "PASS tb_payload_ram",
@@ -78,21 +79,28 @@ def validate_summary(payload: dict[str, Any]) -> list[str]:
     return errors
 
 
-def validate_logs() -> list[str]:
+def validate_logs(rtl_log: Path = RTL_LOG, lint_log: Path = LINT_LOG) -> list[str]:
+    """Validate evidence logs. Paths are injectable so the gate logic itself
+    can be unit-tested without a real verification run."""
     errors: list[str] = []
 
-    if not LINT_LOG.is_file():
+    if not lint_log.is_file():
         errors.append("missing Verilator lint log")
     else:
-        lint_text = LINT_LOG.read_text(encoding="utf-8", errors="replace")
+        lint_text = lint_log.read_text(encoding="utf-8", errors="replace")
         if "%Warning-" in lint_text or "%Error-" in lint_text:
             errors.append("Verilator lint log contains warning/error diagnostics")
 
-    if not RTL_LOG.is_file():
+    if not rtl_log.is_file():
         errors.append("missing RTL regression log")
         return errors
 
-    rtl_text = RTL_LOG.read_text(encoding="utf-8", errors="replace")
+    rtl_text = rtl_log.read_text(encoding="utf-8", errors="replace")
+    if re.search(r"^\*\* (Fatal|Error)", rtl_text, re.MULTILINE):
+        # Protects against drivers that keep running after a failed
+        # simulation: a transcript with diagnostics must fail even when a
+        # completion marker is present.
+        errors.append("RTL regression log contains error/fatal diagnostics")
     if "PASS: complete RTL regression" not in rtl_text:
         errors.append("RTL regression completion marker is missing")
 

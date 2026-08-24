@@ -98,6 +98,7 @@ def main() -> int:
         ("test_bit_order.py", "Directed bit-order tests"),
         ("test_randomized.py", "Deterministic randomized tests"),
         ("test_reports.py", "EDA report parser tests"),
+        ("test_evidence_gate.py", "CI evidence-gate self-tests"),
     ]
     for filename, label in test_groups:
         stages.append(run_python_test_file(filename, label))
