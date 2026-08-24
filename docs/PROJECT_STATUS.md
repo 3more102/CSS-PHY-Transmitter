@@ -29,9 +29,9 @@ The pre-publication tool-independent suite executed **46 Python tests with 0 fai
 
 ## RTL
 
-All required transmitter blocks and top-level integration are implemented. Self-checking SystemVerilog tests cover payload RAM, PHR, padding, DEMUX, preamble/SFD, both symbol mappers, interleaver, QPSK, DQPSK, chirp ROM, CSK, controller, protocol behavior, and top-level samples.
+All required transmitter blocks and top-level integration are implemented. Self-checking SystemVerilog tests cover payload RAM, PHR, padding, DEMUX, preamble/SFD, both symbol mappers, interleaver, QPSK, DQPSK, chirp ROM, CSK, controller, protocol behavior (including held-start re-arm), back-to-back multi-packet operation, mid-stream reset sweeps, CHIRP_INDEX 2/3/4 sweeps and SAMPLE_DIV sweeps, and top-level samples.
 
-RTL is marked **IMPLEMENTED** until an HDL simulator actually executes the tests. GitHub Actions provisions Icarus Verilog and Verilator and runs the same evidence driver.
+RTL is marked **VERIFIED** at the simulation level: the full regression matrix has been executed end to end by ModelSim (48 simulations PASS: unit TBs plus both rates across the payload matrix with sample-exact golden comparison), and the same matrix runs under Icarus Verilog in CI. GitHub Actions provisions Icarus Verilog and Verilator and runs the same evidence driver.
 
 ## FPGA / timing
 
