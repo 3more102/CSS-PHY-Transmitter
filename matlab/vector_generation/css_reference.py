@@ -265,7 +265,7 @@ def twos_complement_binary(value: int, width: int) -> str:
 
 def write_complex_samples(path: Path, samples: np.ndarray, width: int = 8) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
+    with path.open("w", newline="\n", encoding="utf-8") as f:
         for idx, v in enumerate(samples):
             r = int(round(float(v.real)))
             i = int(round(float(v.imag)))
