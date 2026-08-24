@@ -29,7 +29,7 @@ REPORTS.mkdir(parents=True, exist_ok=True)
 SUMMARY_JSON = REPORTS / "verification_summary.json"
 SUMMARY_TXT = REPORTS / "verification_summary.txt"
 
-TOOLS = ["python3", "iverilog", "vvp", "verilator", "octave", "matlab", "vivado", "quartus_sh"]
+TOOLS = ["python3", "iverilog", "vvp", "verilator", "vlog", "vsim", "octave", "matlab", "vivado", "quartus_sh"]
 
 
 def tool_map() -> dict[str, str | None]:
@@ -109,9 +109,12 @@ def main() -> int:
 
     if tools["iverilog"] and tools["vvp"]:
         stages.append(run_command("RTL simulation regression", ["bash", "scripts/run_rtl_tests.sh"], "rtl_regression.log"))
+    elif shutil.which("vlog") or shutil.which("vsim") or os.environ.get("MODELSIM_BIN"):
+        # Fallback: same regression matrix executed by ModelSim/Questasim when
+        # Icarus Verilog is unavailable. Same PASS markers, same strictness.
+        stages.append(run_command("RTL simulation regression (ModelSim)", [sys.executable, "scripts/run_rtl_tests_msim.py"], "rtl_regression_msim.log"))
     else:
-        missing = [x for x in ("iverilog", "vvp") if not tools[x]]
-        stages.append(blocked("RTL simulation regression", "Missing tool(s): " + ", ".join(missing)))
+        stages.append(blocked("RTL simulation regression", "Missing tool(s): iverilog, vvp (no vlog/vsim fallback)"))
 
     if tools["verilator"]:
         stages.append(run_command("Verilator lint", ["bash", "scripts/run_lint.sh"], "verilator_lint.log"))

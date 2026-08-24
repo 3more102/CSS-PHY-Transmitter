@@ -56,6 +56,18 @@ Run RTL regression directly:
 make rtl
 ```
 
+When Icarus Verilog is unavailable but ModelSim/Questasim (`vlib`/`vlog`/`vsim`)
+is installed, the identical regression matrix runs through:
+
+```bash
+make rtl-msim
+```
+
+The ModelSim driver applies the same strictness contract: every invocation must
+exit 0, every test must emit its expected PASS marker, and any `** Error`,
+`** Failure` or `** Fatal` diagnostic fails the regression (older ModelSim
+builds exit 0 even after `$fatal`, so transcript scanning is mandatory there).
+
 Run strict Verilator lint:
 
 ```bash

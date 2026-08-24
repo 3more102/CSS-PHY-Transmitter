@@ -13,3 +13,5 @@ reports/vivado/
 # Generated local verification summaries (reproducible via make verify)
 reports/verification_summary.json
 reports/verification_summary.txt
+results/msim/
+/transcript
