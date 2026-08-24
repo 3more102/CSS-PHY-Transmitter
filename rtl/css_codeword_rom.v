@@ -22,6 +22,10 @@ module css_codeword_rom (
         for (i = 0; i < 512; i = i + 1)
             m32[i] = 32'h0;
         $readmemh("cw32.hex", m32);
+        // synthesis translate_off
+        if (^m32[0] === 1'bx)
+            $display("FATAL: cw32.hex missing/unreadable - codeword ROM unloaded");
+        // synthesis translate_on
         // cw32.hex stores c0 at the MSB (text order); re-map so c0 = bit 0
         for (i = 0; i < 512; i = i + 1) begin : rev
             integer b;

@@ -236,9 +236,25 @@ def main():
 
         plen = length
         payload = payload_stimulus(length, seed=case_id)
+
+        # The golden chip stream below MUST be computed from exactly the same
+        # bytes that are written to the DUT stimulus file.  As a permanent
+        # guard against seed drift, a different case_id MUST produce a
+        # different chip stream (for non-empty payloads).
+        if length > 0:
+            alt = tx_chips(length, rate, case_seed=case_id + 1)
+            base = tx_chips(length, rate, case_seed=case_id)
+            assert alt[0] != base[0], \
+                "seed drift guard failed for %s" % tag
+
         with open(os.path.join(VEC, "payload_%s.hex" % tag), "w") as f:
             for byte in payload:
                 f.write("%02x\n" % byte)
+        # re-read the written stimulus and require byte-for-byte identity with
+        # the payload used by the golden computation
+        stim = [int(l, 16) for l in
+                open(os.path.join(VEC, "payload_%s.hex" % tag)).read().split()]
+        assert stim == payload, "stimulus/golden payload mismatch for %s" % tag
 
         ci, cq = tx_chips(length, rate, case_seed=case_id)
         chirp_q = quantize(chirp_sequence(m))
@@ -246,12 +262,19 @@ def main():
         with open(os.path.join(VEC, "golden_%s.hex" % tag), "w") as f:
             for r, i in zip(re_s, im_s):
                 f.write("%02x%02x\n" % (twos(r, 8), twos(i, 8)))
-        manifest.append((tag, rate, length, m, len(re_s)))
-        print("%-18s samples=%d pad=%d" % (tag, len(re_s), padding_by(rate, length)))
+        crc = 0
+        for b in payload:
+            crc = ((crc << 1) | (crc >> 15)) & 0xFFFF
+            crc ^= b
+            crc &= 0xFFFF
+        manifest.append((tag, rate, length, m, len(re_s), case_id, "%04x" % crc))
+        print("%-18s samples=%d pad=%d case_id=%d seed=%d payload_crc=%04x"
+              % (tag, len(re_s), padding_by(rate, length), case_id, case_id, crc))
 
     with open(os.path.join(VEC, "manifest.txt"), "w") as f:
-        for tag, rate, length, m, nsamp in manifest:
-            f.write("%s %d %d %d %d\n" % (tag, rate, length, m, nsamp))
+        for tag, rate, length, m, nsamp, cid, crc in manifest:
+            f.write("%s %d %d %d %d %d %s\n"
+                    % (tag, rate, length, m, nsamp, cid, crc))
     print("done: %d golden cases" % len(manifest))
 
 

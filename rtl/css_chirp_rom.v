@@ -17,6 +17,10 @@ module css_chirp_rom (
 
     initial begin
         $readmemh("chirp_rom.hex", mem);
+        // synthesis translate_off
+        if (^mem[0] === 1'bx)
+            $display("FATAL: chirp_rom.hex missing/unreadable - CSK ROM unloaded");
+        // synthesis translate_on
     end
 
     always @(posedge clk) begin
