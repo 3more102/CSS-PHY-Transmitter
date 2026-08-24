@@ -10,9 +10,13 @@ REFDIR = ROOT / "matlab" / "vector_generation"
 sys.path.insert(0, str(REFDIR))
 from css_reference import (
     RATE_1M, RATE_250K, payload_to_bits, framed_binary_data, demux_iq,
-    serial_to_symbols, codeword_table, ppdu_iq_chips,
+    serial_to_symbols, codeword_table, ppdu_iq_chips, INTERLEAVER_PERM,
 )
 from test_architecture import controller_chips
+
+
+# The 16-entry comb order recorded in docs/BIT_ORDER.md.
+BIT_ORDER_DOC_COMB = [0,13,2,15,4,9,6,11,8,5,10,7,12,1,14,3]
 
 
 class BitOrderTests(unittest.TestCase):
@@ -59,6 +63,36 @@ class BitOrderTests(unittest.TestCase):
                     exp_i, exp_q = ppdu_iq_chips(payload, rate)
                     np.testing.assert_array_equal(got_i, exp_i)
                     np.testing.assert_array_equal(got_q, exp_q)
+
+    def test_interleaver_comb_order_matches_bit_order_doc(self):
+        """The 250-kbps permutation must emit 4-chip groups in the documented
+        G-word comb order (history: fixed in d416ea8, verified here against
+        the current reference table)."""
+        group_starts = INTERLEAVER_PERM.reshape(16, 4)[:, 0]
+        derived = (group_starts // 4).tolist()
+        self.assertEqual(derived, BIT_ORDER_DOC_COMB)
+        self.assertEqual(sorted(int(x) for x in INTERLEAVER_PERM), list(range(64)),
+                         "permutation is not a bijection onto 0..63")
+        inverse = np.empty_like(INTERLEAVER_PERM)
+        inverse[INTERLEAVER_PERM] = np.arange(64)
+        np.testing.assert_array_equal(inverse, INTERLEAVER_PERM)
+
+    def test_committed_mem_lines_serialize_c0_first(self):
+        """Every committed codeword ROM line lists c0 as its first character,
+        matching the c0-first serialization contract and the supplied text
+        files (history: fixed in d416ea8)."""
+        for rate, mem_name in ((RATE_1M, "codeword_1m.mem"),
+                               (RATE_250K, "codeword_250k.mem")):
+            lines = [l.strip() for l
+                     in (ROOT/"rtl"/"rom"/mem_name).read_text().splitlines() if l.strip()]
+            table = codeword_table(rate)
+            self.assertEqual(len(lines), len(table))
+            for symbol, (line, row) in enumerate(zip(lines, table)):
+                with self.subTest(rate=rate, symbol=symbol):
+                    expected = "".join("1" if x == 1 else "0" for x in row)
+                    self.assertEqual(line, expected)
+                    self.assertEqual(line[0], "1" if row[0] == 1 else "0",
+                                     f"c0 not first for {mem_name} symbol {symbol}")
 
 
 if __name__ == "__main__":
