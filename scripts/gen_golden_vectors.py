@@ -102,7 +102,7 @@ def padding_by(rate, payload_len_bytes):
     return 24 - (total % 24)
 
 
-def tx_chips(payload_len, rate):
+def tx_chips(payload_len, rate, case_seed=0):
     pad = padding_by(rate, payload_len)
     """Chip-level I/Q stream (+1/-1) before QPSK mapping."""
     pre_len = PREAMBLE_LEN[rate]
@@ -111,7 +111,7 @@ def tx_chips(payload_len, rate):
     table = codeword_table(cw_len)
 
     data_bits = build_phr_bits(payload_len)
-    payload = payload_stimulus(payload_len)
+    payload = payload_stimulus(payload_len, seed=case_seed)
     for byte in payload:
         data_bits += [(byte >> (7 - i)) & 1 for i in range(8)]
     data_bits += [0] * pad
@@ -240,7 +240,7 @@ def main():
             for byte in payload:
                 f.write("%02x\n" % byte)
 
-        ci, cq = tx_chips(length, rate)
+        ci, cq = tx_chips(length, rate, case_seed=case_id)
         chirp_q = quantize(chirp_sequence(m))
         re_s, im_s = dqpsk_modulate(ci, cq, chirp_q, m)
         with open(os.path.join(VEC, "golden_%s.hex" % tag), "w") as f:
