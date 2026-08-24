@@ -38,6 +38,7 @@ for rate in 1m 250k; do
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_protocol -o "results/sim/protocol_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_protocol.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_multi -o "results/sim/multi_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_multi.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_reset_sweep -o "results/sim/reset_sweep_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_reset_sweep.sv
+  iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_stress -o "results/sim/stress_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_stress.sv
   vvp "results/sim/protocol_${rate}.vvp"
   for len in 0 1 3 25 127; do
     vvp "results/sim/controller_${rate}.vvp" "+PLEN=$len" "+PAYLOAD=vectors/full_${rate}_len${len}_payload.hex" "+CHIPS=vectors/full_${rate}_len${len}_chips.txt"
@@ -57,6 +58,10 @@ for rate in 1m 250k; do
   vvp "results/sim/reset_sweep_${rate}.vvp" \
     "+PLEN=25" "+PAYLOAD=vectors/full_${rate}_len25_payload.hex" \
     "+SAMPLES=vectors/full_${rate}_len25_samples.hex"
+  # Deterministic multi-packet stress regression.
+  vvp "results/sim/stress_${rate}.vvp" \
+    "+SCHEDULE=vectors/stress_${rate}_index.txt" \
+    "+RATETAG=${rate}"
 done
 
 # Chirp-index sweep: CHIRP_INDEX=2..4 end to end (1 is covered above). The

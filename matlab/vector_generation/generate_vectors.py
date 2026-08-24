@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import random
 import sys
 import numpy as np
 
@@ -118,5 +119,59 @@ for rate, rate_name in [(RATE_1M, "1m"), (RATE_250K, "250k")]:
                 r = int(round(float(v.real))) & 0xFF
                 i = int(round(float(v.imag))) & 0xFF
                 f.write(f"{r:02x} {i:02x}\n")
+
+
+# ---------------------------------------------------------------------------
+# Deterministic multi-packet stress schedules.
+#
+# Two independent fixed seeds:
+#   * STRESS_SEED_CI  : compact schedule (default) executed by make rtl /
+#                       make rtl-msim and required by the CI evidence gate.
+#   * STRESS_SEED_EXT : extended local stress (120 packets) for soak runs;
+#                       selectable via +SCHEDULE= without touching CI time.
+# Packet streams deliberately include length corners (0, 1, and the 63/64
+# word-boundary pair), zero-gap back-to-back starts, and varied idle gaps so
+# sequence-dependent state leakage breaks golden equality.
+# ---------------------------------------------------------------------------
+STRESS_SEED_CI = 0xC5C5C5A5
+STRESS_SEED_EXT = 0xE717E51D
+
+
+def stress_lengths(rng: random.Random, count: int) -> list:
+    lengths = [0, 1]
+    lengths += [rng.randrange(2, 63) for _ in range(count - 4)]
+    lengths += [63, 64]
+    return lengths
+
+
+def emit_stress_schedule(rate: int, rate_name: str, seed: int, count: int) -> None:
+    rng = random.Random(seed)
+    index_lines = []
+    for pkt, length in enumerate(stress_lengths(rng, count)):
+        payload = bytes(rng.randrange(256) for _ in range(length))
+        gap = rng.choice([0, 0, 1, 2, 3, 5, 8, 13])
+        pbase = f"stress_{rate_name}_p{pkt}"
+        (VECTORS / f"{pbase}_payload.hex").write_text(
+            "\n".join(f"{b:02x}" for b in payload) + ("\n" if payload else ""),
+            encoding="utf-8")
+        result = transmit(payload, rate, chirp_index=1)
+        with (VECTORS / f"{pbase}_samples.hex").open("w", encoding="utf-8") as f:
+            for v in result.samples:
+                r = int(round(float(v.real))) & 0xFF
+                i = int(round(float(v.imag))) & 0xFF
+                f.write(f"{r:02x} {i:02x}\n")
+        # Numeric-only columns: the testbench derives file names from the
+        # packet id and a rate tag plusarg, avoiding $fscanf("%s") which is
+        # not portable across simulators.
+        index_lines.append(f"{pkt} {length} {gap}")
+    (VECTORS / f"stress_{rate_name}_index.txt").write_text(
+        "\n".join(index_lines) + "\n", encoding="utf-8")
+    print(f"stress schedule {rate_name}: seed=0x{seed:X} packets={count}")
+
+
+emit_stress_schedule(RATE_1M, "1m", STRESS_SEED_CI, count=24)
+emit_stress_schedule(RATE_250K, "250k", STRESS_SEED_CI, count=24)
+emit_stress_schedule(RATE_1M, "1m_ext", STRESS_SEED_EXT, count=120)
+emit_stress_schedule(RATE_250K, "250k_ext", STRESS_SEED_EXT, count=120)
 
 print(f"Generated vectors and ROMs under {ROOT}")

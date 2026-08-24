@@ -31,7 +31,7 @@ REQUIRED_STAGES = (
     "RTL simulation regression",
     "Verilator lint",
 )
-MIN_PYTHON_TESTS = 62
+MIN_PYTHON_TESTS = 63
 REQUIRED_PAYLOADS = (0, 1, 3, 25, 127)
 REQUIRED_UNIT_MARKERS = (
     "PASS tb_payload_ram",
@@ -125,6 +125,9 @@ def validate_logs(rtl_log: Path = RTL_LOG, lint_log: Path = LINT_LOG) -> list[st
         sweep_marker = f"PASS tb_css_phy_tx_reset_sweep rate={rate} resets=6 plen=25"
         if sweep_marker not in rtl_text:
             errors.append(f"RTL mid-stream reset sweep evidence missing: {sweep_marker}")
+        stress_marker = f"PASS tb_css_phy_tx_stress rate={rate} packets=24"
+        if stress_marker not in rtl_text:
+            errors.append(f"RTL stress evidence missing: {stress_marker}")
 
     for rate in (0, 1):
         for m in (2, 3, 4):

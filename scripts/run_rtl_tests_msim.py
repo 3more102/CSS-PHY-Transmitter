@@ -39,7 +39,8 @@ UNIT_TBS = [
     "tb_csk_modulator",
 ]
 RATE_TBS = ["tb_css_tx_controller", "tb_css_phy_tx_top", "tb_css_phy_protocol",
-            "tb_css_phy_tx_multi", "tb_css_phy_tx_reset_sweep"]
+            "tb_css_phy_tx_multi", "tb_css_phy_tx_reset_sweep",
+            "tb_css_phy_tx_stress"]
 LENGTHS = [0, 1, 3, 25, 127]
 
 ERROR_RE = re.compile(r"^\*\* (Error|Failure|Fatal)", re.MULTILINE)
@@ -168,6 +169,14 @@ def main() -> int:
                     f"+SAMPLES=vectors/full_{rate}_len25_samples.hex"],
                    r"PASS tb_css_phy_tx_reset_sweep rate=\d+ resets=6 plen=25")
 
+        # Deterministic multi-packet stress regression. Every packet is
+        # compared sample-exact against independently generated reference
+        # vectors, with varied lengths and inter-packet gaps.
+        d.simulate(vsim, lib, "tb_css_phy_tx_stress", f"stress_{rate}",
+                   [f"+SCHEDULE=vectors/stress_{rate}_index.txt",
+                    f"+RATETAG={rate}"],
+                   r"PASS tb_css_phy_tx_stress rate=\d+ packets=24")
+
     # Chirp-index sweep: elaborations with CHIRP_INDEX=2..4 (1 is covered by
     # the canonical matrix). Each variant gets its own library holding only a
     # chirp-defined top testbench; the RTL resolves from work_base via -L.
@@ -210,7 +219,7 @@ def main() -> int:
                        rf"PASS tb_css_phy_tx_top rate=\d+ plen=25 chirp=\d+ sdiv={div} samples=\d+",
                        search_libs=["work_base"])
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 2) + 2 * 3 + 2 * 2
+    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 3) + 2 * 3 + 2 * 2
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:
@@ -218,7 +227,7 @@ def main() -> int:
         print("FAIL: complete RTL regression")
         return 1
     print("\nPASS: complete RTL regression "
-          f"({total} simulations: {len(UNIT_TBS)} unit + 2 rates x (protocol + controller/top x {len(LENGTHS)} lengths))")
+          f"({total} simulations: {len(UNIT_TBS)} unit + 2 rates x (protocol + controller/top x {len(LENGTHS)} lengths + multi + reset + stress))")
     return 0
 
 

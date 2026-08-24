@@ -23,7 +23,7 @@ gate = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gate)
 
 # Suite size guarded by the gate; keep in sync with tests/ discovery count.
-MIN_PYTHON_TESTS = 62
+MIN_PYTHON_TESTS = 63
 
 
 def build_rtl_log() -> str:
@@ -37,6 +37,7 @@ def build_rtl_log() -> str:
             lines.append(f"PASS tb_css_phy_tx_top rate={rate} plen={plen} chirp=1 sdiv=1 samples=20")
         lines.append(f"PASS tb_css_phy_tx_multi rate={rate} packets=3 lens=25,25,127")
         lines.append(f"PASS tb_css_phy_tx_reset_sweep rate={rate} resets=6 plen=25")
+        lines.append(f"PASS tb_css_phy_tx_stress rate={rate} packets=24")
         for m in (2, 3, 4):
             lines.append(f"PASS tb_css_phy_tx_top rate={rate} plen=25 chirp={m} sdiv=1 samples=30")
         for div in (2, 5):
@@ -116,6 +117,16 @@ class EvidenceGateTests(unittest.TestCase):
         errors = self.check_logs()
         self.assertTrue(any("reset sweep evidence missing" in e and "rate=0" in e
                             for e in errors))
+
+    def test_removed_stress_marker_detected(self):
+        text = build_rtl_log().replace(
+            "PASS tb_css_phy_tx_stress rate=1 packets=24\n", "")
+        self.rtl.write_text(text, encoding="utf-8")
+        errors = self.check_logs()
+        self.assertTrue(any(
+            "stress evidence missing" in e and "rate=1" in e
+            for e in errors
+        ))
 
     def test_removed_chirp_sweep_marker_detected(self):
         text = build_rtl_log().replace(
