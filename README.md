@@ -95,6 +95,9 @@ GitHub Actions has executed the Icarus/Verilator flow successfully. The CI evide
 - every unit-test PASS marker;
 - protocol PASS for both rates;
 - controller and top-level PASS for payloads `0, 1, 3, 25, 127` at both rates;
+- back-to-back multi-packet PASS for both rates (three sequential packets,
+  including equal-length packets with distinct payload contents, verifying
+  packet-to-packet state cleanup);
 - fixed-point MSE acceptance;
 - strict Verilator `-Wall` success with warnings treated as fatal;
 - no Verilator warning/error diagnostics in the preserved lint log.

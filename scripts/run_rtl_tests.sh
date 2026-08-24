@@ -36,11 +36,21 @@ for rate in 1m 250k; do
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_tx_controller -o "results/sim/controller_${rate}.vvp" "${RTL[@]}" tb/tb_css_tx_controller.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_top -o "results/sim/top_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_top.sv
   iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_protocol -o "results/sim/protocol_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_protocol.sv
+  iverilog -g2012 -Wall "${defs[@]}" -s tb_css_phy_tx_multi -o "results/sim/multi_${rate}.vvp" "${RTL[@]}" tb/tb_css_phy_tx_multi.sv
   vvp "results/sim/protocol_${rate}.vvp"
   for len in 0 1 3 25 127; do
     vvp "results/sim/controller_${rate}.vvp" "+PLEN=$len" "+PAYLOAD=vectors/full_${rate}_len${len}_payload.hex" "+CHIPS=vectors/full_${rate}_len${len}_chips.txt"
     vvp "results/sim/top_${rate}.vvp" "+PLEN=$len" "+PAYLOAD=vectors/full_${rate}_len${len}_payload.hex" "+SAMPLES=vectors/full_${rate}_len${len}_samples.hex"
   done
+  # Back-to-back packets: equal length + distinct contents between packets 1
+  # and 2 detects payload/framing/modulator state leakage across packets.
+  vvp "results/sim/multi_${rate}.vvp" \
+    "+P1LEN=25" "+P1PAYLOAD=vectors/full_${rate}_len25_payload.hex" \
+    "+P2LEN=25" "+P2PAYLOAD=vectors/full_${rate}_len25alt_payload.hex" \
+    "+P3LEN=127" "+P3PAYLOAD=vectors/full_${rate}_len127alt_payload.hex" \
+    "+P1SAMPLES=vectors/full_${rate}_len25_samples.hex" \
+    "+P2SAMPLES=vectors/full_${rate}_len25alt_samples.hex" \
+    "+P3SAMPLES=vectors/full_${rate}_len127alt_samples.hex"
 done
 
 echo "PASS: complete RTL regression"

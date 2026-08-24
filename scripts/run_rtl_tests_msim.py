@@ -38,7 +38,8 @@ UNIT_TBS = [
     "tb_interleaver", "tb_qpsk_mapper", "tb_dqpsk_encoder", "tb_chirp_rom",
     "tb_csk_modulator",
 ]
-RATE_TBS = ["tb_css_tx_controller", "tb_css_phy_tx_top", "tb_css_phy_protocol"]
+RATE_TBS = ["tb_css_tx_controller", "tb_css_phy_tx_top", "tb_css_phy_protocol",
+            "tb_css_phy_tx_multi"]
 LENGTHS = [0, 1, 3, 25, 127]
 
 ERROR_RE = re.compile(r"^\*\* (Error|Failure|Fatal)", re.MULTILINE)
@@ -144,8 +145,20 @@ def main() -> int:
             d.simulate(vsim, lib, "tb_css_phy_tx_top", f"top_{rate}_len{length}",
                        common + [f"+SAMPLES=vectors/full_{rate}_len{length}_samples.hex"],
                        rf"PASS tb_css_phy_tx_top rate=\d+ plen={length} samples=\d+")
+        # Back-to-back packets: equal length + distinct contents between
+        # packets 1 and 2 detects cross-packet state leakage.
+        multi_args = [
+            "+P1LEN=25", f"+P1PAYLOAD=vectors/full_{rate}_len25_payload.hex",
+            "+P2LEN=25", f"+P2PAYLOAD=vectors/full_{rate}_len25alt_payload.hex",
+            "+P3LEN=127", f"+P3PAYLOAD=vectors/full_{rate}_len127alt_payload.hex",
+            f"+P1SAMPLES=vectors/full_{rate}_len25_samples.hex",
+            f"+P2SAMPLES=vectors/full_{rate}_len25alt_samples.hex",
+            f"+P3SAMPLES=vectors/full_{rate}_len127alt_samples.hex",
+        ]
+        d.simulate(vsim, lib, "tb_css_phy_tx_multi", f"multi_{rate}", multi_args,
+                   r"PASS tb_css_phy_tx_multi rate=\d+ packets=3 lens=\d+,\d+,\d+")
 
-    total = 12 + 2 * (1 + 2 * len(LENGTHS))
+    total = 12 + 2 * (1 + 2 * len(LENGTHS) + 1)
     if d.failures:
         print(f"\nRTL regression (ModelSim): {len(d.failures)} failure(s)")
         for f in d.failures:

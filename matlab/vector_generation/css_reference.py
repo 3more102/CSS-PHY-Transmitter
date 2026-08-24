@@ -274,3 +274,15 @@ def write_complex_samples(path: Path, samples: np.ndarray, width: int = 8) -> No
 
 def deterministic_payload(length: int) -> bytes:
     return bytes(((37 * i + 0x35) ^ (i >> 1)) & 0xFF for i in range(length))
+
+
+def alternate_payload(length: int) -> bytes:
+    """Second deterministic content family used by back-to-back packet tests.
+
+    Deliberately unrelated to deterministic_payload so that two consecutive
+    packets of equal length with different contents expose any payload-RAM,
+    framing or modulator state leakage between packets.
+    """
+    if not 0 <= length <= 127:
+        raise ValueError("length must be in 0..127")
+    return bytes(((91 * i + 0xC3) ^ ((i + 7) << 1)) & 0xFF for i in range(length))

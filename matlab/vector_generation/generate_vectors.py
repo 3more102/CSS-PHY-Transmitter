@@ -90,4 +90,18 @@ with (VECTORS / "MANIFEST.txt").open("w", encoding="utf-8") as f:
     for row in manifest:
         f.write("%s %d %d %d %d %d\n" % row)
 
+# Back-to-back multi-packet vectors: equal length, distinct contents, so a
+# stale payload/framing/modulator state between packets breaks equality.
+for rate, rate_name in [(RATE_1M, "1m"), (RATE_250K, "250k")]:
+    for length in (25, 127):
+        payload = alternate_payload(length)
+        result = transmit(payload, rate, chirp_index=1)
+        base = f"full_{rate_name}_len{length}alt"
+        (VECTORS / f"{base}_payload.hex").write_text("\n".join(f"{b:02x}" for b in payload)+("\n" if payload else ""), encoding="utf-8")
+        with (VECTORS / f"{base}_samples.hex").open("w", encoding="utf-8") as f:
+            for v in result.samples:
+                r = int(round(float(v.real))) & 0xFF
+                i = int(round(float(v.imag))) & 0xFF
+                f.write(f"{r:02x} {i:02x}\n")
+
 print(f"Generated vectors and ROMs under {ROOT}")
