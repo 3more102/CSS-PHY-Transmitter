@@ -19,11 +19,15 @@ The pre-publication regression executed **46 Python tests with 0 failures** cove
 
 ## HDL testbenches
 
-The `tb/` suite contains self-checking tests for all major blocks plus controller, protocol/reset/start behavior, and full transmitter sample streams for:
+The `tb/` suite contains self-checking tests for all major blocks plus controller, protocol/reset/start behavior, back-to-back multi-packet operation, mid-stream reset sweeps, and full transmitter sample streams for:
 
 ```text
 1 Mbps:   payload 0, 1, 3, 25, 127 bytes
 250 kbps: payload 0, 1, 3, 25, 127 bytes
+back-to-back packets: 25 -> 25 (distinct contents) -> 127 bytes, both rates
+reset sweep: abort at 6 stream depths then sample-exact restart, both rates
+chirp sweep: CHIRP_INDEX 2, 3, 4 end to end, both rates
+SAMPLE_DIV sweep: divider 2 and 5, value-identical streams, both rates
 ```
 
 Run:
@@ -31,6 +35,8 @@ Run:
 ```bash
 make rtl
 ```
+
+When Icarus Verilog is unavailable but ModelSim/Questasim is installed, `make rtl-msim` executes the same matrix with the same strictness (exit code + PASS marker + transcript diagnostics all mandatory).
 
 The target regenerates deterministic vectors before simulation.
 
