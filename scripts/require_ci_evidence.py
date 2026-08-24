@@ -111,6 +111,22 @@ def validate_logs() -> list[str]:
                 errors.append(f"RTL controller matrix evidence missing: {controller_marker}")
             if top_marker not in rtl_text:
                 errors.append(f"RTL top-level matrix evidence missing: {top_marker}")
+        multi_marker = f"PASS tb_css_phy_tx_multi rate={rate} packets=3 lens=25,25,127"
+        if multi_marker not in rtl_text:
+            errors.append(f"RTL back-to-back packet evidence missing: {multi_marker}")
+        sweep_marker = f"PASS tb_css_phy_tx_reset_sweep rate={rate} resets=6 plen=25"
+        if sweep_marker not in rtl_text:
+            errors.append(f"RTL mid-stream reset sweep evidence missing: {sweep_marker}")
+
+    for rate in (0, 1):
+        for m in (2, 3, 4):
+            chirp_marker = f"PASS tb_css_phy_tx_top rate={rate} plen=25 chirp={m} sdiv=1 samples="
+            if chirp_marker not in rtl_text:
+                errors.append(f"RTL chirp sweep evidence missing: {chirp_marker}")
+        for div in (2, 5):
+            sdiv_marker = f"PASS tb_css_phy_tx_top rate={rate} plen=25 chirp=1 sdiv={div} samples="
+            if sdiv_marker not in rtl_text:
+                errors.append(f"RTL SAMPLE_DIV sweep evidence missing: {sdiv_marker}")
 
     return errors
 
